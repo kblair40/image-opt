@@ -7,6 +7,15 @@ import type { ISizeCalculationResult } from "image-size/types/interface";
 import ListImage from "../Image/Image";
 import { getImageMetadata } from "@/actions/getImageMetadata";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectValue,
+  SelectItem,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import ImageListImageActions from "./ImageListImageActions";
 
 type Props = {
   image: File;
@@ -21,6 +30,7 @@ const ImageListImage = ({ image }: Props) => {
     null
   );
   const [metadata, setMetadata] = useState<Metadata>();
+  const [newFileType, setNewFileType] = useState<string>();
 
   const getMetadata = useCallback(async () => {
     const reader = new FileReader();
@@ -54,39 +64,94 @@ const ImageListImage = ({ image }: Props) => {
   }, [getMetadata]);
 
   return (
-    <div
-      className={clsx(
-        "flex flex-col gap-y-1"
-        //
-      )}
-    >
-      <section>
-        <p className="font-medium">{image.name}</p>
-      </section>
-
-      <section className="flex gap-x-4">
-        {metadata && (
-          <>
-            <Badge variant="outline" className="font-semibold">{metadata.type?.toUpperCase()}</Badge>
-            <p className="text-sm">{metadata.sizeString}</p>
-            <p className="text-sm">{metadata.width} x {metadata.height}</p>
-          </>
+    <div className="flex justify-between items-center text-sm">
+      <div
+        className={clsx(
+          "flex flex-col gap-y-1"
+          //
         )}
-      </section>
-      {/* <p>{imgUrl}</p> */}
+      >
+        <section>
+          <p className="font-semibold">{image.name}</p>
+        </section>
 
-      {/* {metadata && <pre>{JSON.stringify(metadata, null, 2)}</pre>} */}
+        <section className="flex justify-between">
+          {metadata ? (
+            <div className="flex items-end gap-x-4">
+              <Badge variant="outline" className="font-semibold">
+                {metadata.type?.toUpperCase()}
+              </Badge>
+              <p className="text-sm">{metadata.sizeString}</p>
+              <p className="text-sm">
+                {metadata.width} x {metadata.height}
+              </p>
+            </div>
+          ) : (
+            <div />
+          )}
+        </section>
+      </div>
 
-      {/* {imgUrl && metadata && (
-        <ListImage
-          alt="placeholder alt text"
-          src={imgUrl}
-          width={metadata.width}
-          height={metadata.height}
-        />
-      )} */}
+      <div>
+        <div className="flex gap-x-2 items-center">
+          {/* <Select>
+            <SelectTrigger size="sm">
+              <SelectValue placeholder="Image Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="jpeg">JPEG</SelectItem>
+              <SelectItem value="png">PNG</SelectItem>
+              <SelectItem value="webp">WEBP</SelectItem>
+              <SelectItem value="avif">AVIF</SelectItem>
+            </SelectContent>
+          </Select> */}
+
+          <Button className="px-2.5" size="sm">
+            Compress
+          </Button>
+
+          <ImageListImageActions />
+        </div>
+      </div>
     </div>
   );
 };
 
 export default ImageListImage;
+
+// {/* <div
+//   className={clsx(
+//     "flex flex-col gap-y-1"
+//     //
+//   )}
+// >
+//   <section>
+//     <p className="font-medium">{image.name}</p>
+//   </section>
+
+//   <section className="flex gap-x-4">
+//     {metadata && (
+//       <>
+//         <Badge variant="outline" className="font-semibold">
+//           {metadata.type?.toUpperCase()}
+//         </Badge>
+//         <p className="text-sm">{metadata.sizeString}</p>
+//         <p className="text-sm">
+//           {metadata.width} x {metadata.height}
+//         </p>
+//       </>
+//     )}
+//   </section>
+//   {/* <p>{imgUrl}</p> */}
+
+//   {/* {metadata && <pre>{JSON.stringify(metadata, null, 2)}</pre>} */}
+
+//   {/* {imgUrl && metadata && (
+//         <ListImage
+//           alt="placeholder alt text"
+//           src={imgUrl}
+//           width={metadata.width}
+//           height={metadata.height}
+//         />
+//       )} */}
+// </div>; */}

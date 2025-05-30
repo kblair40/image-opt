@@ -8,7 +8,8 @@ function Home() {
     <div
       className={clsx(
         "pt-6",
-        "flex flex-col gap-y-8"
+        "flex flex-col gap-y-8",
+        "px-4 sm:px-6"
         // "responsive-border"
         //
       )}
