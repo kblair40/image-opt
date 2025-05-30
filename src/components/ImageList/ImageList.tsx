@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 import clsx from "clsx";
@@ -14,7 +14,11 @@ const ImageList = (props: Props) => {
   return (
     <div className="w-full">
       {acceptedImages.map((img, i) => {
-        return <ImageListImage key={i} image={img} />;
+        return (
+          <div key={i} className="border-y border-neutral-500 py-1 px-2">
+            <ImageListImage image={img} />
+          </div>
+        );
       })}
     </div>
   );

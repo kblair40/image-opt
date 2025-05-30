@@ -38,12 +38,14 @@ const ImageDropzone = () => {
 
   const containerClasses = clsx(
     "h-40 w-full sm:h-60 sm:max-w-md",
+    "rounded-sm",
     "border-2 border-dashed",
     isDragReject
       ? "border-red-500"
       : isDragAccept
       ? "border-emerald-600"
-      : "border-neutral-600"
+      : "border-neutral-400",
+    "bg-neutral-50"
   );
 
   const rootClasses = clsx(
@@ -59,7 +61,10 @@ const ImageDropzone = () => {
         {isDragActive ? (
           <p>Drop your files here</p>
         ) : (
-          <p>Drag &apos;n drop some files here</p>
+          <div className="flex gap-y-1 flex-col items-center text-sm font-medium text-neutral-600">
+            <p>Drag &apos;n drop some files here</p>
+            <p >Or click here to open your file picker</p>
+          </div>
         )}
       </div>
 
