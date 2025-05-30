@@ -1,24 +1,23 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import type { DropzoneOptions, DropEvent, FileRejection } from "react-dropzone";
-// import type {DragHandlerArgs}
+import type { DropEvent, FileRejection } from "react-dropzone";
 import clsx from "clsx";
 
 import { Input } from "@/components/ui/input";
+import { useImagesContext } from "@/hooks/useImagesContext";
 
-type Props = {};
+const ImageDropzone = () => {
+  const { handleDroppedImages } = useImagesContext();
 
-const ALLOWED_FILE_TYPES = [".png", ".jpeg", ".jpg"];
-
-const ImageDropzone = (props: Props) => {
   const handleDrop = useCallback(
     (files: File[], fileRejections: FileRejection[], e: DropEvent) => {
       console.log(
         "File(s) Dropped:",
         JSON.stringify({ files, fileRejections }, null, 2)
       );
+      handleDroppedImages(files, fileRejections);
     },
     []
   );
@@ -63,6 +62,10 @@ const ImageDropzone = (props: Props) => {
           <p>Drag &apos;n drop some files here</p>
         )}
       </div>
+
+      {/* <pre>
+        {JSON.stringify({ ...acceptedImages, ...rejectedImages }, null, 2)}
+      </pre> */}
 
       {/* <pre>
         {JSON.stringify(
