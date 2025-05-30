@@ -8,28 +8,20 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { AllowedImageType } from "@/lib/image-types";
 
-type Props = {};
+type Props = {
+  onClickConvert: (type: AllowedImageType) => void;
+};
 
-const ImageListImageActions = (props: Props) => {
-  function handleClickConvert(type: AllowedImageType) {
-    console.log('Convert to:', type);
-  }
-
+const ImageListImageActions = ({ onClickConvert }: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
-          {/* Advanced */}
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
@@ -37,28 +29,28 @@ const ImageListImageActions = (props: Props) => {
         <DropdownMenuLabel>Convert To...</DropdownMenuLabel>
         <DropdownMenuGroup>
           <DropdownMenuItem
-            onClick={() => handleClickConvert("jpeg")}
+            onClick={() => onClickConvert("jpeg")}
             className="pl-4"
           >
             JPEG
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            onClick={() => handleClickConvert("png")}
+            onClick={() => onClickConvert("png")}
             className="pl-4"
           >
             PNG
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            onClick={() => handleClickConvert("webp")}
+            onClick={() => onClickConvert("webp")}
             className="pl-4"
           >
             WEBP
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            onClick={() => handleClickConvert("avif")}
+            onClick={() => onClickConvert("avif")}
             className="pl-4"
           >
             AVIF

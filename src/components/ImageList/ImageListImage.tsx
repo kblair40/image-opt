@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import ImageListImageActions from "./ImageListImageActions";
+import type { AllowedImageType } from "@/lib/image-types";
+import { compressImage } from "@/actions/compressImage";
 
 type Props = {
   image: File;
@@ -30,7 +32,6 @@ const ImageListImage = ({ image }: Props) => {
     null
   );
   const [metadata, setMetadata] = useState<Metadata>();
-  const [newFileType, setNewFileType] = useState<string>();
 
   const getMetadata = useCallback(async () => {
     const reader = new FileReader();
@@ -62,6 +63,14 @@ const ImageListImage = ({ image }: Props) => {
   useEffect(() => {
     getMetadata();
   }, [getMetadata]);
+
+  async function handleClickConvert(type: AllowedImageType) {
+    console.log("Convert to:", type);
+    if (imgUrl) {
+      const res = await compressImage(imgUrl);
+      console.log('Result:', res);
+    }
+  }
 
   return (
     <div className="flex justify-between items-center text-sm">
@@ -110,7 +119,7 @@ const ImageListImage = ({ image }: Props) => {
             Compress
           </Button>
 
-          <ImageListImageActions />
+          <ImageListImageActions onClickConvert={handleClickConvert} />
         </div>
       </div>
     </div>
