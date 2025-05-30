@@ -1,15 +1,23 @@
-import { Button } from "@/components/ui/button";
+import clsx from "clsx";
+
+import ImageDropzone from "@/components/ImageDropzone/ImageDropzone";
 
 function Home() {
   return (
-    <div className="pt-6">
+    <div
+      className={clsx(
+        "pt-6",
+        // "responsive-border"
+        //
+      )}
+    >
       {/*  */}
       {/*  */}
-      test
-
-      <Button>My Button</Button>
+      <section className="flex justify-center">
+        <ImageDropzone />
+      </section>
     </div>
   );
 }
 
-export default Home
+export default Home;

@@ -123,4 +123,15 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
+  .centered {
+    @apply flex justify-center items-center;
+  }
+  .centered-col {
+    @apply flex flex-col justify-center items-center;
+  }
+
+  .responsive-border {
+    @apply border border-neutral-700 sm:border-emerald-600 md:border-blue-500 lg:border-red-500 xl:border-neutral-700;
+  }
 }

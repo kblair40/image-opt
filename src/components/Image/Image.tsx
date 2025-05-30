@@ -3,10 +3,13 @@ import NextImage from "next/image";
 
 import type { ImageProps } from "next/image";
 
-type Props = ImageProps;
+interface Props extends ImageProps {
+    // TODO: Use ImageProps directly or add 
+    // to this extension of ImageProps
+}
 
-const Image = ({ src }: Props) => {
-  return <div>Image</div>;
+const Image = (props: Props) => {
+  return <NextImage {...props} />;
 };
 
 export default Image;
