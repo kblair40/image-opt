@@ -67,8 +67,11 @@ const ImageListImage = ({ image }: Props) => {
   async function handleClickConvert(type: AllowedImageType) {
     console.log("Convert to:", type);
     if (imgUrl) {
-      const res = await compressImage(imgUrl);
+      const res = await compressImage(imgUrl, type);
       console.log('Result:', res);
+      const b64 = window.btoa(String.fromCharCode(...new Uint8Array(res)));
+
+      console.log('B64:', b64)
     }
   }
 
