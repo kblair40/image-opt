@@ -9,7 +9,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-//   DrawerTrigger,
+  //   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "../ui/button";
 import type { EditData } from "../ImageList/ImageList";
@@ -27,16 +27,15 @@ const ImageEditDrawer = ({ data, onClose }: Props) => {
       </DrawerTrigger> */}
 
       <DrawerContent>
-        {/* <DrawerHeader>
+      {/* <DrawerContent asChild> */}
+        <div className="h-dvh max-h-dvh border-2 border-red-300">
+          {/* <DrawerHeader>
           <DrawerTitle>Are you absolutely sure?</DrawerTitle>
           <DrawerDescription>This action cannot be undone.</DrawerDescription>
         </DrawerHeader> */}
-        <DrawerFooter>
-          {/* <Button>Submit</Button>
-          <DrawerClose>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose> */}
-        </DrawerFooter>
+          {/* <DrawerFooter>
+          </DrawerFooter> */}
+        </div>
       </DrawerContent>
     </Drawer>
   );
