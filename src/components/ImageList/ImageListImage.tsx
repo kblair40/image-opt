@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import type { ISizeCalculationResult } from "image-size/types/interface";
-import type { OutputInfo } from "sharp";
 
 import ListImage from "../Image/Image";
 import { getImageMetadata } from "@/actions/getImageMetadata";
@@ -74,7 +73,7 @@ const ImageListImage = ({ image }: Props) => {
         console.log("Result:", { ...res, dataUrl });
         setOptMetadata({ ...res, dataUrl });
       } else {
-        console.warn('\nConversion/compression failed\n')
+        console.warn("\nConversion/compression failed\n");
       }
     }
   }

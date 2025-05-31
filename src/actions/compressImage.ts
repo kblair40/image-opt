@@ -46,7 +46,7 @@ export async function compressImage(
     if (options.resize) {
       img = resizeImage(img, options.resize);
     }
-    
+
     const imgOut = img
       //   .resize(Math.round(x.width / 2), Math.round(x.height / 2))
       //   .png()
