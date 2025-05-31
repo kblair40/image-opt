@@ -3,27 +3,23 @@
 import React, { useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import type { ISizeCalculationResult } from "image-size/types/interface";
+import type { OutputInfo } from "sharp";
 
 import ListImage from "../Image/Image";
 import { getImageMetadata } from "@/actions/getImageMetadata";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectValue,
-  SelectItem,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import ImageListImageActions from "./ImageListImageActions";
 import type { AllowedImageType } from "@/lib/image-types";
-import { compressImage } from "@/actions/compressImage";
+import { compressImage, type OptimizedMetadata } from "@/actions/compressImage";
 
 type Props = {
   image: File;
 };
 
-type Metadata = ISizeCalculationResult & { bytes: number; sizeString: string };
+type MetadataCur = ISizeCalculationResult & {
+  bytes: number;
+};
 
 const ImageListImage = ({ image }: Props) => {
   const [imgUrl, setImgUrl] = useState<string>();
@@ -31,14 +27,17 @@ const ImageListImage = ({ image }: Props) => {
   const [readErr, setReadErr] = useState<ProgressEvent<FileReader> | null>(
     null
   );
-  const [metadata, setMetadata] = useState<Metadata>();
+  const [metadata, setMetadata] = useState<MetadataCur>();
+  const [optMetadata, setOptMetadata] = useState<OptimizedMetadata>();
+
+  function getSizeString(bytes: number) {
+    const kb = bytes / 1000;
+
+    return kb >= 1000 ? (kb / 1000).toFixed(1) + "mb" : kb.toFixed(1) + " kb";
+  }
 
   const getMetadata = useCallback(async () => {
     const reader = new FileReader();
-
-    const kb = image.size / 1000;
-    const sizeString =
-      kb >= 1000 ? (kb / 1000).toFixed(1) + "mb" : kb.toFixed(1) + " kb";
 
     reader.onerror = (e) => {
       setLoading(false);
@@ -53,7 +52,7 @@ const ImageListImage = ({ image }: Props) => {
         const md = await getImageMetadata(reader.result);
         console.log("\nMETADATA:", md, "\n");
 
-        setMetadata({ ...md, sizeString, bytes: image.size } as Metadata);
+        setMetadata({ ...md, bytes: image.size } as MetadataCur);
       }
     };
 
@@ -68,10 +67,15 @@ const ImageListImage = ({ image }: Props) => {
     console.log("Convert to:", type);
     if (imgUrl) {
       const res = await compressImage(imgUrl, type);
-      console.log('Result:', res);
-      const b64 = window.btoa(String.fromCharCode(...new Uint8Array(res)));
 
-      console.log('B64:', b64)
+      if (res) {
+        const dataUrl =
+          `data:image/${res.metadata.format};base64,` + res.dataUrl;
+        console.log("Result:", { ...res, dataUrl });
+        setOptMetadata({ ...res, dataUrl });
+      } else {
+        console.warn('\nConversion/compression failed\n')
+      }
     }
   }
 
@@ -93,13 +97,23 @@ const ImageListImage = ({ image }: Props) => {
               <Badge variant="outline" className="font-semibold">
                 {metadata.type?.toUpperCase()}
               </Badge>
-              <p className="text-sm">{metadata.sizeString}</p>
+              <p className="text-sm">{getSizeString(metadata.bytes)}</p>
               <p className="text-sm">
                 {metadata.width} x {metadata.height}
               </p>
             </div>
           ) : (
             <div />
+          )}
+
+          {optMetadata && (
+            <div className="flex items-end ml-4 gap-x-4">
+              <div className="">{">"}</div>
+              <p>{getSizeString(optMetadata.metadata.size)}</p>
+              <p>
+                ({optMetadata.metadata.width} x {optMetadata.metadata.height})
+              </p>
+            </div>
           )}
         </section>
       </div>
@@ -124,6 +138,17 @@ const ImageListImage = ({ image }: Props) => {
 
           <ImageListImageActions onClickConvert={handleClickConvert} />
         </div>
+      </div>
+
+      <div className="fixed bottom-2 left-2 z-50 border-2 border-neutral-600 w-fit max-w-dvw overlow-x-auto max-h-60 overflow-y-scroll">
+        {optMetadata && (
+          <ListImage
+            alt="placeholder alt text"
+            src={optMetadata.dataUrl}
+            width={optMetadata.metadata.width}
+            height={optMetadata.metadata.height}
+          />
+        )}
       </div>
     </div>
   );
