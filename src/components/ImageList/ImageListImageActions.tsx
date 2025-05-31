@@ -15,9 +15,15 @@ import type { AllowedImageType } from "@/lib/image-types";
 
 type Props = {
   onClickConvert: (type: AllowedImageType) => void;
+  onClickCrop: () => void;
+  loading: boolean;
 };
 
-const ImageListImageActions = ({ onClickConvert }: Props) => {
+const ImageListImageActions = ({
+  onClickConvert,
+  onClickCrop,
+  loading,
+}: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -27,31 +33,31 @@ const ImageListImageActions = ({ onClickConvert }: Props) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuLabel>Convert To...</DropdownMenuLabel>
-        <DropdownMenuGroup>
+        <DropdownMenuGroup className="cursor-pointer">
           <DropdownMenuItem
             onClick={() => onClickConvert("jpeg")}
-            className="pl-4"
+            className="pl-4 cursor-pointer"
           >
             JPEG
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={() => onClickConvert("png")}
-            className="pl-4"
+            className="pl-4 cursor-pointer"
           >
             PNG
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={() => onClickConvert("webp")}
-            className="pl-4"
+            className="pl-4 cursor-pointer"
           >
             WEBP
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={() => onClickConvert("avif")}
-            className="pl-4"
+            className="pl-4 cursor-pointer"
           >
             AVIF
           </DropdownMenuItem>
@@ -60,7 +66,13 @@ const ImageListImageActions = ({ onClickConvert }: Props) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem className="font-medium">Advanced</DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={loading}
+            onClick={onClickCrop}
+            className="font-medium cursor-pointer"
+          >
+            Crop / Resize
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

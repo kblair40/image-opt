@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import type { ISizeCalculationResult } from "image-size/types/interface";
+import { Crop } from "lucide-react";
 
 import ListImage from "../Image/Image";
 import { getImageMetadata } from "@/actions/getImageMetadata";
@@ -12,21 +13,22 @@ import ImageListImageActions from "./ImageListImageActions";
 import type { AllowedImageType } from "@/lib/image-types";
 import { compressImage, type OptimizedMetadata } from "@/actions/compressImage";
 
-type Props = {
-  image: File;
-};
-
-type MetadataCur = ISizeCalculationResult & {
+export type Metadata = ISizeCalculationResult & {
   bytes: number;
 };
 
-const ImageListImage = ({ image }: Props) => {
+type Props = {
+  image: File;
+  onClickEditImage: (image: File, md: Metadata) => void;
+};
+
+const ImageListImage = ({ image, onClickEditImage }: Props) => {
   const [imgUrl, setImgUrl] = useState<string>();
   const [loading, setLoading] = useState(true);
   const [readErr, setReadErr] = useState<ProgressEvent<FileReader> | null>(
     null
   );
-  const [metadata, setMetadata] = useState<MetadataCur>();
+  const [metadata, setMetadata] = useState<Metadata>();
   const [optMetadata, setOptMetadata] = useState<OptimizedMetadata>();
 
   function getSizeString(bytes: number) {
@@ -51,7 +53,8 @@ const ImageListImage = ({ image }: Props) => {
         const md = await getImageMetadata(reader.result);
         console.log("\nMETADATA:", md, "\n");
 
-        setMetadata({ ...md, bytes: image.size } as MetadataCur);
+        setMetadata({ ...md, bytes: image.size } as Metadata);
+        setLoading(false);
       }
     };
 
@@ -135,7 +138,11 @@ const ImageListImage = ({ image }: Props) => {
             Compress
           </Button>
 
-          <ImageListImageActions onClickConvert={handleClickConvert} />
+          <ImageListImageActions
+            loading={loading || !metadata}
+            onClickCrop={() => onClickEditImage(image, metadata!)}
+            onClickConvert={handleClickConvert}
+          />
         </div>
       </div>
 
