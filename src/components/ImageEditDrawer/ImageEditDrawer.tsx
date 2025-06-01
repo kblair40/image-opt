@@ -1,16 +1,25 @@
 import React from "react";
 // import { Crop } from "lucide-react";
 
+// import {
+//   Drawer,
+//   DrawerClose,
+//   DrawerContent,
+//   DrawerDescription,
+//   DrawerFooter,
+//   DrawerHeader,
+//   DrawerTitle,
+//   //   DrawerTrigger,
+// } from "@/components/ui/drawer";
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  //   DrawerTrigger,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+} from "@/components/ui/sheet";
 import { Button } from "../ui/button";
 import type { EditData } from "../ImageList/ImageList";
 
@@ -21,24 +30,31 @@ type Props = {
 
 const ImageEditDrawer = ({ data, onClose }: Props) => {
   return (
-    <Drawer open={true}>
-      {/* <DrawerTrigger>
-        <Crop />
-      </DrawerTrigger> */}
+    <Sheet
+      open={true}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      {/* <SheetContent className="h-dvh max-h-11/12" side="bottom"> */}
+      <SheetContent className="h-dvh" side="bottom">
+        {/* <SheetHeader>
+        </SheetHeader> */}
 
-      <DrawerContent>
-      {/* <DrawerContent asChild> */}
-        <div className="h-dvh max-h-dvh border-2 border-red-300">
-          {/* <DrawerHeader>
-          <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-          <DrawerDescription>This action cannot be undone.</DrawerDescription>
-        </DrawerHeader> */}
-          {/* <DrawerFooter>
-          </DrawerFooter> */}
-        </div>
-      </DrawerContent>
-    </Drawer>
+        {/* <SheetFooter>
+        </SheetFooter> */}
+      </SheetContent>
+    </Sheet>
   );
 };
+
+// const ImageEditDrawer = ({ data, onClose }: Props) => {
+//   return (
+//     <Drawer open={true}>
+//       <DrawerContent>
+//       </DrawerContent>
+//     </Drawer>
+//   );
+// };
 
 export default ImageEditDrawer;
