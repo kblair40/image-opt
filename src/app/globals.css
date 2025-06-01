@@ -134,4 +134,14 @@ body {
   .responsive-border {
     @apply border border-neutral-700 sm:border-emerald-600 md:border-blue-500 lg:border-red-500 xl:border-neutral-700;
   }
+  .child-border > * {
+    @apply border border-neutral-700
+  }
+}
+
+.crop-container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  /* border: 6px solid green; */
 }

@@ -1,20 +1,20 @@
 "use client";
 
 import React from "react";
-// import { Crop } from "lucide-react";
+import { Crop } from "lucide-react";
 
 import {
   Sheet,
   SheetContent,
-  SheetTitle
+  SheetTitle,
   // SheetHeader,
   //   SheetFooter,
-  
 } from "@/components/ui/sheet";
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
 // import { Button } from "@/components/ui/button";
 import type { EditData } from "../ImageList/ImageList";
 import ImageCropper from "../ImageCropper/ImageCropper";
+import { cn } from "@/lib/utils";
 
 type Props = {
   data: EditData;
@@ -30,17 +30,19 @@ const ImageEditDrawer = ({ data, onClose }: Props) => {
       }}
     >
       {/* <SheetContent className="h-dvh max-h-11/12" side="bottom"> */}
-      <SheetContent className="h-dvh bg-white px-4 pt-6 pb-12" side="bottom">
-        <SheetTitle className="invisible">
-            Title
-        </SheetTitle>
-        {/* <SheetHeader>
-            header
-        </SheetHeader> */}
+      <SheetContent
+        // className="border-4 bg-white px-4 pt-0 pb-0"
+        className={cn("h-dvh max-h-dvh overflow-hidden border-4 bg-white p-0")}
+        side="bottom"
+      >
+        <div className="flex flex-col w-full h-dvh">
+          <SheetTitle className="invisible h-0">Title</SheetTitle>
 
-        <section className="h-full">
-          <ImageCropper data={data} />
-        </section>
+          <section className="h-dvh">
+            <ImageCropper data={data} />
+          </section>
+
+        </div>
 
         {/* <SheetFooter>
             footer
