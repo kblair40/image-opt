@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 // import { Crop } from "lucide-react";
 
@@ -14,11 +16,8 @@ import React from "react";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
+  //   SheetHeader,
+  //   SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "../ui/button";
 import type { EditData } from "../ImageList/ImageList";
