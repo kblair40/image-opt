@@ -1,26 +1,20 @@
-"use client"
+"use client";
 
 import React from "react";
 // import { Crop } from "lucide-react";
 
-// import {
-//   Drawer,
-//   DrawerClose,
-//   DrawerContent,
-//   DrawerDescription,
-//   DrawerFooter,
-//   DrawerHeader,
-//   DrawerTitle,
-//   //   DrawerTrigger,
-// } from "@/components/ui/drawer";
 import {
   Sheet,
   SheetContent,
-  //   SheetHeader,
+  SheetTitle
+  // SheetHeader,
   //   SheetFooter,
+  
 } from "@/components/ui/sheet";
-import { Button } from "../ui/button";
+// import { AspectRatio } from "@/components/ui/aspect-ratio";
+// import { Button } from "@/components/ui/button";
 import type { EditData } from "../ImageList/ImageList";
+import ImageCropper from "../ImageCropper/ImageCropper";
 
 type Props = {
   data: EditData;
@@ -36,11 +30,20 @@ const ImageEditDrawer = ({ data, onClose }: Props) => {
       }}
     >
       {/* <SheetContent className="h-dvh max-h-11/12" side="bottom"> */}
-      <SheetContent className="h-dvh" side="bottom">
+      <SheetContent className="h-dvh bg-white px-4 pt-6 pb-12" side="bottom">
+        <SheetTitle className="invisible">
+            Title
+        </SheetTitle>
         {/* <SheetHeader>
+            header
         </SheetHeader> */}
 
+        <section className="h-full">
+          <ImageCropper data={data} />
+        </section>
+
         {/* <SheetFooter>
+            footer
         </SheetFooter> */}
       </SheetContent>
     </Sheet>

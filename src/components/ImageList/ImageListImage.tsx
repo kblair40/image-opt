@@ -19,7 +19,7 @@ export type Metadata = ISizeCalculationResult & {
 
 type Props = {
   image: File;
-  onClickEditImage: (image: File, md: Metadata) => void;
+  onClickEditImage: (image: File, md: Metadata, dataUrl: string) => void;
 };
 
 const ImageListImage = ({ image, onClickEditImage }: Props) => {
@@ -139,8 +139,8 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
           </Button>
 
           <ImageListImageActions
-            loading={loading || !metadata}
-            onClickCrop={() => onClickEditImage(image, metadata!)}
+            loading={loading || !metadata || !imgUrl}
+            onClickCrop={() => onClickEditImage(image, metadata!, imgUrl!)}
             onClickConvert={handleClickConvert}
           />
         </div>

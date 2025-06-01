@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import clsx from "clsx";
 
 import { useImagesContext } from "@/hooks/useImagesContext";
@@ -9,15 +9,15 @@ import ImageEditDrawer from "../ImageEditDrawer/ImageEditDrawer";
 
 type Props = {};
 
-export type EditData = Metadata & { image: File };
+export type EditData = Metadata & { image: File; dataUrl: string };
 
 const ImageList = (props: Props) => {
   const [editData, setEditData] = useState<EditData | null>(null);
 
   const { clearImages, acceptedImages, rejectedImages } = useImagesContext();
 
-  const handleClickEditImage = (image: File, md: Metadata) => {
-    setEditData({ image, ...md });
+  const handleClickEditImage = (image: File, md: Metadata, dataUrl: string) => {
+    setEditData({ image, dataUrl, ...md });
   };
 
   return (
