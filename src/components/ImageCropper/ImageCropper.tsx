@@ -16,14 +16,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import type { Dimensions } from "@/lib/image-types";
 // import Image from "../Image/Image";
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 type Props = {
   data: EditData;
 };
-
-type Dimensions = { width: number; height: number };
 
 function centerAspectCrop(
   mediaWidth: number,
