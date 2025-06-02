@@ -7,7 +7,7 @@ import type {
   ResizeOptions,
 } from "sharp";
 import { imageSize } from "image-size";
-import type { PixelCrop } from "react-image-crop";
+import type { PercentCrop } from "react-image-crop";
 import type { ISizeCalculationResult } from "image-size/types/interface";
 
 import type { Dimensions } from "@/lib/image-types";
@@ -20,22 +20,29 @@ export type OptimizedMetadata = {
 
 export async function cropImage(
   dataUrl: string,
-  crop: PixelCrop
+  crop: PercentCrop
 ): Promise<OptimizedMetadata | null> {
   try {
     const buf = Buffer.from(dataUrl.split(",")[1], "base64");
     const metadata = await imageSize(buf);
     console.log("metadata:", metadata);
 
-    if (!metadata.type) {
-      return null;
-    }
+    // if (!metadata.type) {
+    //   return null;
+    // }
+    // const preMd = await sharp(buf).metadata();
+    // console.log("\nPRE METADATA:", preMd, "\n");
+    const left = Math.floor((crop.x / 100) * metadata.width);
+    const top = Math.floor((crop.y / 100) * metadata.height);
+    const width = Math.floor((crop.width / 100) * metadata.width);
+    const height = Math.floor((crop.height / 100) * metadata.height);
 
+    console.log("\nCROP CONFIG:", { left, top, width, height }, "\n");
     const img = sharp(buf).extract({
-      left: crop.x,
-      top: crop.y,
-      width: crop.width,
-      height: crop.height,
+      left,
+      top,
+      width,
+      height,
     });
 
     const bufOut = await img.toBuffer();

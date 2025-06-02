@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import type { AllowedImageType, Dimensions } from "@/lib/image-types";
 import { resizeImage } from "@/actions/resizeImage";
+import { cropImage } from "@/actions/cropImage";
 import { useDebounceFn } from "@/hooks/useDebounceFn";
 // import type { Metadata } from "../ImageList/ImageListImage";
 import type { OptimizedMetadata } from "@/actions/resizeImage";
@@ -56,6 +57,7 @@ function dataUrlPrefix(type: string) {
 
 const ImageCropper = ({ data }: Props) => {
   const [crop, setCrop] = useState<Crop>();
+  const [pctCrop, setPctCrop] = useState<PercentCrop>();
   const [aspect, setAspect] = useState<number | undefined>(
     data.width / data.height
   );
@@ -184,7 +186,27 @@ const ImageCropper = ({ data }: Props) => {
 
     // debounce(() => setCrop(pctCrop));
     // setCrop(pctCrop);
+    setPctCrop(pctCrop);
     setCrop(pxCrop);
+  }
+
+  async function handleCropComplete(pxCrop: PixelCrop) {
+    console.log("\nCROP Complete:", { pxCrop });
+
+    if (!pctCrop) return;
+    const croppedImage = await cropImage(data.dataUrl, pctCrop);
+    console.log("\nCropped Image:", croppedImage);
+
+    // debounce(() => setCrop(pctCrop));
+    // setCrop(pctCrop);
+    setCrop(pxCrop);
+
+    if (croppedImage) {
+      setCroppedImageUrl(
+        dataUrlPrefix(croppedImage.metadata.type || "") + croppedImage.dataUrl
+      );
+      setCroppedImageMetadata(croppedImage.metadata);
+    }
   }
 
   return (
@@ -228,7 +250,7 @@ const ImageCropper = ({ data }: Props) => {
         </div>
       </section>
 
-      <section className="grow max-h-full overflow-y-auto centered">
+      <section className="grow max-h-full overflow-y-auto centered z-50">
         {!showPreview ? (
           <ReactCrop
             crop={crop}
@@ -236,13 +258,13 @@ const ImageCropper = ({ data }: Props) => {
             // onChange={(px, pct) => debounce(() => handleCropChange(px, pct))}
             // onChange={(_, percentCrop) => setCrop(percentCrop)}
             // onComplete={(c) => setCompletedCrop(c)}
-            onComplete={(c) => {
-                console.log('Completed Crop:', c)
-                setCompletedCrop(c)
-            }}
+            // onComplete={(c) => {
+            //     console.log('Completed Crop:', c)
+            //     setCompletedCrop(c)
+            // }}
+            onComplete={handleCropComplete}
             // className="w-full h-full relative"
             aspect={aspect}
-
           >
             <Image
               ref={imgRef}
@@ -268,6 +290,9 @@ const ImageCropper = ({ data }: Props) => {
             height={croppedImageMetadata.height}
             //   className="object-cover"
             //   fill
+            onError={(e) => {
+              console.log("\nError loading image:", e);
+            }}
           />
         ) : null}
       </section>
