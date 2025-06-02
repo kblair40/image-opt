@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import type { Dimensions } from "@/lib/image-types";
 import { resizeImage } from "@/actions/resizeImage";
+import { useDebounceFn } from "@/hooks/useDebounceFn";
 // import Image from "../Image/Image";
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
 
@@ -61,10 +62,12 @@ const ImageCropper = ({ data }: Props) => {
 
   const imgRef = useRef<HTMLImageElement>(null);
 
+  const { run: debounce } = useDebounceFn();
+
   //   const { width, height, type } = data;
   //   const dataUrl = `data:image/${type};base64,` + data.dataUrl;
 
-  console.log("DATA URL:", data.dataUrl);
+//   console.log("DATA URL:", data.dataUrl);
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (aspect) {
@@ -74,6 +77,7 @@ const ImageCropper = ({ data }: Props) => {
   }
 
   async function handleResizeImage(dims: Dimensions) {
+    console.group("RESIZING");
     setResizing(true);
 
     try {
@@ -84,6 +88,7 @@ const ImageCropper = ({ data }: Props) => {
     }
 
     setResizing(false);
+    console.groupEnd();
   }
 
   function handleClickCrop() {
@@ -153,7 +158,7 @@ const ImageCropper = ({ data }: Props) => {
       dims.width = w;
     }
 
-    handleResizeImage(dims);
+    debounce(() => handleResizeImage(dims));
   };
 
   return (
