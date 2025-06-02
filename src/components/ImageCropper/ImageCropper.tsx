@@ -19,8 +19,12 @@ import { Input } from "@/components/ui/input";
 import type { Dimensions } from "@/lib/image-types";
 import { resizeImage } from "@/actions/resizeImage";
 import { useDebounceFn } from "@/hooks/useDebounceFn";
+// import type { Metadata } from "../ImageList/ImageListImage";
+import type { OptimizedMetadata } from "@/actions/resizeImage";
 // import Image from "../Image/Image";
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
+
+type Metadata = OptimizedMetadata["metadata"];
 
 type Props = {
   data: EditData;
@@ -53,10 +57,13 @@ const ImageCropper = ({ data }: Props) => {
   );
   //   const [aspect, setAspect] = useState<number | undefined>(16 / 9);
   const [croppedImageUrl, setCroppedImageUrl] = React.useState<string>("");
+  const [croppedImageMetadata, setCroppedImageMetadata] =
+    React.useState<Metadata>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [width, setWidth] = useState(data.width);
   const [height, setHeight] = useState(data.height);
   const [resizing, setResizing] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const originalDims = { width: data.width, height: data.height };
 
@@ -67,7 +74,7 @@ const ImageCropper = ({ data }: Props) => {
   //   const { width, height, type } = data;
   //   const dataUrl = `data:image/${type};base64,` + data.dataUrl;
 
-//   console.log("DATA URL:", data.dataUrl);
+  //   console.log("DATA URL:", data.dataUrl);
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (aspect) {
@@ -83,6 +90,11 @@ const ImageCropper = ({ data }: Props) => {
     try {
       const resizedImage = await resizeImage(data.dataUrl, dims);
       console.log("\nResized Image:", resizedImage);
+
+      if (resizedImage) {
+        setCroppedImageUrl(resizedImage?.dataUrl);
+        setCroppedImageMetadata(resizedImage.metadata);
+      }
     } catch (e) {
       console.log("Failed to resize:", e);
     }
@@ -164,6 +176,9 @@ const ImageCropper = ({ data }: Props) => {
   return (
     <div className="px-4 w-full h-dvh max-h-dvh flex flex-col">
       <section className="pt-3 pb-1 flex gap-x-4">
+        <Button onClick={() => setShowPreview(cur => !cur)}>
+            Show {showPreview ? "Original" : "Preview"}
+        </Button>
         <Button
           onClick={handleClickCrop}
           variant="outline"
@@ -200,17 +215,31 @@ const ImageCropper = ({ data }: Props) => {
       </section>
 
       <section className="grow max-h-full overflow-y-auto">
-        <ReactCrop
-          crop={crop}
-          onChange={(_, percentCrop) => setCrop(percentCrop)}
-          onComplete={(c) => setCompletedCrop(c)}
-          // className="w-full h-full relative"
-          aspect={aspect}
-        >
+        {!showPreview ? (
+          <ReactCrop
+            crop={crop}
+            onChange={(_, percentCrop) => setCrop(percentCrop)}
+            onComplete={(c) => setCompletedCrop(c)}
+            // className="w-full h-full relative"
+            aspect={aspect}
+          >
+            <Image
+              ref={imgRef}
+              alt="alt-placeholder"
+              src={data.dataUrl}
+              onLoad={onImageLoad}
+              // style={{ maxHeight: "100%" }}
+              style={{ maxWidth: "100%" }}
+              width={data.width}
+              height={data.height}
+              //   className="object-cover"
+              //   fill
+            />
+          </ReactCrop>
+        ) : croppedImageUrl ? (
           <Image
-            ref={imgRef}
             alt="alt-placeholder"
-            src={data.dataUrl}
+            src={croppedImageUrl}
             onLoad={onImageLoad}
             // style={{ maxHeight: "100%" }}
             style={{ maxWidth: "100%" }}
@@ -219,7 +248,7 @@ const ImageCropper = ({ data }: Props) => {
             //   className="object-cover"
             //   fill
           />
-        </ReactCrop>
+        ) : null}
       </section>
 
       <section>
