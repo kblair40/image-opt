@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import type { Dimensions } from "@/lib/image-types";
+import type { AllowedImageType, Dimensions } from "@/lib/image-types";
 import { resizeImage } from "@/actions/resizeImage";
 import { useDebounceFn } from "@/hooks/useDebounceFn";
 // import type { Metadata } from "../ImageList/ImageListImage";
@@ -48,6 +48,10 @@ function centerAspectCrop(
     mediaWidth,
     mediaHeight
   );
+}
+
+function dataUrlPrefix(type: string) {
+  return `data:image/${type};base64,`;
 }
 
 const ImageCropper = ({ data }: Props) => {
@@ -92,7 +96,9 @@ const ImageCropper = ({ data }: Props) => {
       console.log("\nResized Image:", resizedImage);
 
       if (resizedImage) {
-        setCroppedImageUrl(resizedImage?.dataUrl);
+        setCroppedImageUrl(
+          dataUrlPrefix(resizedImage.metadata.type || "") + resizedImage.dataUrl
+        );
         setCroppedImageMetadata(resizedImage.metadata);
       }
     } catch (e) {
@@ -176,8 +182,8 @@ const ImageCropper = ({ data }: Props) => {
   return (
     <div className="px-4 w-full h-dvh max-h-dvh flex flex-col">
       <section className="pt-3 pb-1 flex gap-x-4">
-        <Button onClick={() => setShowPreview(cur => !cur)}>
-            Show {showPreview ? "Original" : "Preview"}
+        <Button onClick={() => setShowPreview((cur) => !cur)}>
+          Show {showPreview ? "Original" : "Preview"}
         </Button>
         <Button
           onClick={handleClickCrop}
@@ -214,7 +220,7 @@ const ImageCropper = ({ data }: Props) => {
         </div>
       </section>
 
-      <section className="grow max-h-full overflow-y-auto">
+      <section className="grow max-h-full overflow-y-auto centered">
         {!showPreview ? (
           <ReactCrop
             crop={crop}
@@ -236,15 +242,15 @@ const ImageCropper = ({ data }: Props) => {
               //   fill
             />
           </ReactCrop>
-        ) : croppedImageUrl ? (
+        ) : croppedImageUrl && croppedImageMetadata ? (
           <Image
             alt="alt-placeholder"
             src={croppedImageUrl}
             onLoad={onImageLoad}
             // style={{ maxHeight: "100%" }}
             style={{ maxWidth: "100%" }}
-            width={data.width}
-            height={data.height}
+            width={croppedImageMetadata.width}
+            height={croppedImageMetadata.height}
             //   className="object-cover"
             //   fill
           />
