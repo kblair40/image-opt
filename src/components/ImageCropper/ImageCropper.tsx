@@ -11,15 +11,19 @@ import ReactCrop, {
 import type { Crop, PixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
-import type { EditData } from "../ImageList/ImageList";
-import { Button } from "../ui/button";
+import type { EditData } from "@/components/ImageList/ImageList";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 // import Image from "../Image/Image";
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 type Props = {
   data: EditData;
 };
+
+type Dimensions = { width: number; height: number };
 
 function centerAspectCrop(
   mediaWidth: number,
@@ -49,6 +53,11 @@ const ImageCropper = ({ data }: Props) => {
   //   const [aspect, setAspect] = useState<number | undefined>(16 / 9);
   const [croppedImageUrl, setCroppedImageUrl] = React.useState<string>("");
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [width, setWidth] = useState(data.width);
+  const [height, setHeight] = useState(data.height);
+  const [resizing, setResizing] = useState(false);
+
+  const originalDims = { width: data.width, height: data.height };
 
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -62,6 +71,18 @@ const ImageCropper = ({ data }: Props) => {
       const { width, height } = e.currentTarget;
       setCrop(centerAspectCrop(width, height, aspect));
     }
+  }
+
+  async function handleResizeImage(dims: Dimensions) {
+    setResizing(true);
+
+    try {
+      //
+    } catch (e) {
+      console.log("Failed to resize:", e);
+    }
+
+    setResizing(false);
   }
 
   function handleClickCrop() {
@@ -117,12 +138,59 @@ const ImageCropper = ({ data }: Props) => {
     }
   }
 
+  const handleChangeDimensions = (dim: "height" | "width", value: string) => {
+    const numericValue = Number.isNaN(value) ? null : parseFloat(value);
+    if (!numericValue) return;
+    const dims = { height, width };
+    if (dim === "height") {
+      const h = Math.min(data.height, numericValue);
+      setHeight(h);
+      dims.height = h;
+    } else {
+      const w = Math.min(data.width, numericValue);
+      setWidth(w);
+      dims.width = w;
+    }
+
+    handleResizeImage(dims);
+  };
+
   return (
     <div className="px-4 w-full h-dvh max-h-dvh flex flex-col">
-      <section className="pt-3 pb-1">
-        <Button onClick={handleClickCrop} variant="outline" className={cn("p-1")}>
+      <section className="pt-3 pb-1 flex gap-x-4">
+        <Button
+          onClick={handleClickCrop}
+          variant="outline"
+          className={cn("p-1")}
+        >
           <CropIcon className="size-5" />
         </Button>
+
+        <div className="flex gap-x-2">
+          <Label>Width</Label>
+          <Input
+            type="number"
+            value={width}
+            onChange={(e) => {
+              handleChangeDimensions("width", e.target.value);
+            }}
+            min={0}
+            max={data.width}
+          />
+        </div>
+
+        <div className="flex gap-x-2">
+          <Label>Height</Label>
+          <Input
+            type="number"
+            value={height}
+            onChange={(e) => {
+              handleChangeDimensions("height", e.target.value);
+            }}
+            min={0}
+            max={data.height}
+          />
+        </div>
       </section>
 
       <section className="grow max-h-full overflow-y-auto">
