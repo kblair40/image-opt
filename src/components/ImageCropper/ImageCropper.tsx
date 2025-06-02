@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import type { Dimensions } from "@/lib/image-types";
+import { resizeImage } from "@/actions/resizeImage";
 // import Image from "../Image/Image";
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
 
@@ -76,7 +77,8 @@ const ImageCropper = ({ data }: Props) => {
     setResizing(true);
 
     try {
-      //
+      const resizedImage = await resizeImage(data.dataUrl, dims);
+      console.log("\nResized Image:", resizedImage);
     } catch (e) {
       console.log("Failed to resize:", e);
     }
