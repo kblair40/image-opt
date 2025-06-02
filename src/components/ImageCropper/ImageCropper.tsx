@@ -8,7 +8,7 @@ import ReactCrop, {
   makeAspectCrop,
   convertToPixelCrop,
 } from "react-image-crop";
-import type { Crop, PixelCrop } from "react-image-crop";
+import type { Crop, PixelCrop, PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
 import type { EditData } from "@/components/ImageList/ImageList";
@@ -179,6 +179,14 @@ const ImageCropper = ({ data }: Props) => {
     debounce(() => handleResizeImage(dims));
   };
 
+  function handleCropChange(pxCrop: PixelCrop, pctCrop: PercentCrop) {
+    console.log("\nCROP CHANGE:", { pxCrop, pctCrop });
+
+    // debounce(() => setCrop(pctCrop));
+    // setCrop(pctCrop);
+    setCrop(pxCrop);
+  }
+
   return (
     <div className="px-4 w-full h-dvh max-h-dvh flex flex-col">
       <section className="pt-3 pb-1 flex gap-x-4">
@@ -224,10 +232,17 @@ const ImageCropper = ({ data }: Props) => {
         {!showPreview ? (
           <ReactCrop
             crop={crop}
-            onChange={(_, percentCrop) => setCrop(percentCrop)}
-            onComplete={(c) => setCompletedCrop(c)}
+            onChange={handleCropChange}
+            // onChange={(px, pct) => debounce(() => handleCropChange(px, pct))}
+            // onChange={(_, percentCrop) => setCrop(percentCrop)}
+            // onComplete={(c) => setCompletedCrop(c)}
+            onComplete={(c) => {
+                console.log('Completed Crop:', c)
+                setCompletedCrop(c)
+            }}
             // className="w-full h-full relative"
             aspect={aspect}
+
           >
             <Image
               ref={imgRef}
