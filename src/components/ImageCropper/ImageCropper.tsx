@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Crop as CropIcon } from "lucide-react";
 import ReactCrop, {
@@ -16,7 +16,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import type { AllowedImageType, Dimensions } from "@/lib/image-types";
+import type {
+  AllowedImageFormat,
+  Dimensions,
+  CroppedImage,
+} from "@/lib/image-types";
 import { resizeImage } from "@/actions/resizeImage";
 import { cropImage } from "@/actions/cropImage";
 import { useDebounceFn } from "@/hooks/useDebounceFn";
@@ -25,6 +29,7 @@ import type { OptimizedMetadata } from "@/actions/resizeImage";
 // import Image from "../Image/Image";
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
 // import SharpImage from "@/lib/SharpImage";
+import { getCroppedImg } from "@/lib/client-image-utils";
 
 type Metadata = OptimizedMetadata["metadata"];
 
@@ -60,6 +65,7 @@ const ImageCropper = ({ data }: Props) => {
   const [crop, setCrop] = useState<Crop>();
   const [pctCrop, setPctCrop] = useState<PercentCrop>();
   //   const [aspect, setAspect] = useState<number | undefined>(16 / 9);
+  const [croppedImage, setCroppedImage] = React.useState<CroppedImage>();
   const [croppedImageUrl, setCroppedImageUrl] = React.useState<string>("");
   const [croppedImageMetadata, setCroppedImageMetadata] =
     React.useState<Metadata>();
@@ -73,28 +79,15 @@ const ImageCropper = ({ data }: Props) => {
   const [showPreview, setShowPreview] = useState(false);
 
   const imgRef = useRef<HTMLImageElement>(null);
-  //   const sharpImage = useRef(
-  //     new SharpImage({
-  //       dataUrl: data.dataUrl,
-  //       el: "" as unknown as HTMLImageElement,
-  //       //   el: imgRef.current,
-  //     })
-  //   );
-//   const sharpImage = useRef<SharpImage | null>(null);
-
   const { run: debounce } = useDebounceFn();
 
-//   useEffect(() => {
-//     sharpImage.current = new SharpImage({
-//       dataUrl: data.dataUrl,
-//       el: imgRef.current!,
-//     });
-//   }, [data.dataUrl]);
-
-  //   const { width, height, type } = data;
-  //   const dataUrl = `data:image/${type};base64,` + data.dataUrl;
-
-  //   console.log("DATA URL:", data.dataUrl);
+  if (!data.type) {
+    return (
+      <div className="h-40 centered text-red-600">
+        <p>Image type must be provided</p>
+      </div>
+    );
+  }
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (aspect) {
@@ -129,40 +122,44 @@ const ImageCropper = ({ data }: Props) => {
     console.log({ crop, completedCrop });
     if (!crop || !completedCrop) return;
     if (imgRef.current && crop.width && crop.height) {
-      const { dataUrl } = getCroppedImg(imgRef.current, completedCrop);
+      const { dataUrl } = getCroppedImg({
+        image: imgRef.current!,
+        crop: completedCrop,
+        fmt: data.type as AllowedImageFormat,
+      });
       setCroppedImageUrl(dataUrl);
     }
   }
 
-  function getCroppedImg(
-    image: HTMLImageElement,
-    crop: PixelCrop
-  ): { dataUrl: string; metadata: Metadata } {
-    const canvas = document.createElement("canvas");
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-    console.log("Scale:", { scaleX, scaleY });
+  //   function getCroppedImg(
+  //     image: HTMLImageElement,
+  //     crop: PixelCrop
+  //   ): { dataUrl: string; metadata: Metadata } {
+  //     const canvas = document.createElement("canvas");
+  //     const scaleX = image.naturalWidth / image.width;
+  //     const scaleY = image.naturalHeight / image.height;
+  //     console.log("Scale:", { scaleX, scaleY });
 
-    const w = crop.width * scaleX;
-    const h = crop.height * scaleY;
-    canvas.width = w;
-    canvas.height = h;
+  //     const w = crop.width * scaleX;
+  //     const h = crop.height * scaleY;
+  //     canvas.width = w;
+  //     canvas.height = h;
 
-    const ctx = canvas.getContext("2d");
+  //     const ctx = canvas.getContext("2d");
 
-    if (ctx) {
-      ctx.imageSmoothingEnabled = false;
+  //     if (ctx) {
+  //       ctx.imageSmoothingEnabled = false;
 
-      ctx.drawImage(image, crop.x * scaleX, crop.y * scaleY, w, h, 0, 0, w, h);
-    }
+  //       ctx.drawImage(image, crop.x * scaleX, crop.y * scaleY, w, h, 0, 0, w, h);
+  //     }
 
-    return {
-      //   dataUrl: canvas.toDataURL("image/png", 1.0),
-      dataUrl: canvas.toDataURL(`image/${data.type}`, 1.0),
-      metadata: { width: w, height: h, format: data.type! },
-      //   metadata: null,
-    };
-  }
+  //     return {
+  //       //   dataUrl: canvas.toDataURL("image/png", 1.0),
+  //       dataUrl: canvas.toDataURL(`image/${data.type}`, 1.0),
+  //       metadata: { width: w, height: h, format: data.type! },
+  //       //   metadata: null,
+  //     };
+  //   }
 
   function handleToggleAspectClick() {
     if (aspect) {
@@ -207,7 +204,12 @@ const ImageCropper = ({ data }: Props) => {
 
     debounce(() => {
       if (imgRef.current) {
-        const { dataUrl, metadata } = getCroppedImg(imgRef.current, pxCrop);
+        const { dataUrl, metadata } = getCroppedImg({
+          image: imgRef.current!,
+          crop: pxCrop,
+          fmt: data.type as AllowedImageFormat,
+        });
+        // const { dataUrl, metadata } = getCroppedImg(imgRef.current, pxCrop);
         setCroppedImageUrl(dataUrl);
         setCroppedImageMetadata(metadata);
       }

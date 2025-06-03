@@ -7,7 +7,7 @@ type GetCroppedImg = {
   crop: PixelCrop;
   fmt: AllowedImageFormat;
 };
-function getCroppedImg({ image, crop, fmt }: GetCroppedImg) {
+export function getCroppedImg({ image, crop, fmt }: GetCroppedImg) {
   //   ): { dataUrl: string; metadata: Metadata } {
   const canvas = document.createElement("canvas");
   const scaleX = image.naturalWidth / image.width;

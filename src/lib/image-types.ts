@@ -7,6 +7,10 @@ import type {
   FormatEnum,
 } from "sharp";
 
+import { getCroppedImg } from "./client-image-utils";
+
+export type CroppedImage = ReturnType<typeof getCroppedImg>
+
 export type AllowedImageFormat = keyof Pick<
   FormatEnum,
   "jpeg" | "jpg" | "png" | "avif" | "webp"
