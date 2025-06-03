@@ -34,6 +34,7 @@ export async function resizeImage(
   dataUrl: string,
   dims: Dimensions
 ): Promise<OptimizedMetadata | null> {
+  // ): Promise<OptimizedMetadata | null> {
   try {
     const buf = Buffer.from(dataUrl.split(",")[1], "base64");
     const metadata = await imageSize(buf);

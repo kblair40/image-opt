@@ -13,19 +13,20 @@ import type { Channels } from "sharp";
 
 import type { Dimensions } from "@/lib/image-types";
 import { resizeImage as _resizeImage } from "@/lib/server-image-utils";
+import type { OptimizedMetadata } from "./resizeImage";
 
-type OptMetadata = ISizeCalculationResult &
-  Omit<OutputInfo, "channels" | "premultiplied">;
+// type OptMetadata = ISizeCalculationResult &
+//   Omit<OutputInfo, "channels" | "premultiplied">;
+// // export type OptimizedMetadata = {
+// //   metadata: ISizeCalculationResult & OutputInfo;
+// //   dataUrl: string;
+// // };
+
 // export type OptimizedMetadata = {
-//   metadata: ISizeCalculationResult & OutputInfo;
+//   metadata: OptMetadata;
+//   //   metadata: ISizeCalculationResult & OutputInfo;
 //   dataUrl: string;
 // };
-
-export type OptimizedMetadata = {
-  metadata: OptMetadata;
-  //   metadata: ISizeCalculationResult & OutputInfo;
-  dataUrl: string;
-};
 
 export async function cropImage(
   dataUrl: string,

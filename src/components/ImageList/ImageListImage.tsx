@@ -10,7 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ImageListImageActions from "./ImageListImageActions";
 import type { AllowedImageType } from "@/lib/image-types";
-import { compressImage, type OptimizedMetadata } from "@/actions/compressImage";
+import {
+  compressImage,
+  // type OptimizedMetadata
+} from "@/actions/compressImage";
+import type { OptimizedMetadata } from "@/actions/resizeImage";
 
 export type Metadata = ISizeCalculationResult & {
   bytes: number;
@@ -30,7 +34,8 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
   const [metadata, setMetadata] = useState<Metadata>();
   const [optMetadata, setOptMetadata] = useState<OptimizedMetadata>();
 
-  function getSizeString(bytes: number) {
+  function getSizeString(bytes?: number) {
+    if (!bytes) return "?kb";
     const kb = bytes / 1000;
 
     return kb >= 1000 ? (kb / 1000).toFixed(1) + "mb" : kb.toFixed(1) + " kb";
@@ -110,6 +115,7 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
           {optMetadata && (
             <div className="flex items-end ml-4 gap-x-4">
               <div className="">{">"}</div>
+              {/* <p>{getSizeString(optMetadata.metadata.size)}</p> */}
               <p>{getSizeString(optMetadata.metadata.size)}</p>
               <p>
                 ({optMetadata.metadata.width} x {optMetadata.metadata.height})

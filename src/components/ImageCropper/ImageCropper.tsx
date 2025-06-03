@@ -57,18 +57,10 @@ function centerAspectCrop(
   );
 }
 
-function dataUrlPrefix(type: string) {
-  return `data:image/${type};base64,`;
-}
-
 const ImageCropper = ({ data }: Props) => {
   const [crop, setCrop] = useState<Crop>();
   const [pctCrop, setPctCrop] = useState<PercentCrop>();
-  //   const [aspect, setAspect] = useState<number | undefined>(16 / 9);
   const [croppedImage, setCroppedImage] = React.useState<CroppedImage>();
-  const [croppedImageUrl, setCroppedImageUrl] = React.useState<string>("");
-  const [croppedImageMetadata, setCroppedImageMetadata] =
-    React.useState<Metadata>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspect, setAspect] = useState<number | undefined>(
     data.width / data.height
@@ -96,20 +88,19 @@ const ImageCropper = ({ data }: Props) => {
     }
   }
 
-  async function handleResizeImage(dims: Dimensions) {
+  function handleResizeImage(dims: Dimensions) {
     console.group("RESIZING");
     setResizing(true);
 
     try {
-      const resizedImage = await resizeImage(data.dataUrl, dims);
-      console.log("\nResized Image:", resizedImage);
+      const { width, height } = dims;
+      const croppedImage = getCroppedImg({
+        image: imgRef.current!,
+        crop: { x: 0, y: 0, width, height, unit: "px" },
+        fmt: data.type as AllowedImageFormat,
+      });
 
-      if (resizedImage) {
-        setCroppedImageUrl(
-          dataUrlPrefix(resizedImage.metadata.type || "") + resizedImage.dataUrl
-        );
-        setCroppedImageMetadata(resizedImage.metadata);
-      }
+      setCroppedImage(croppedImage);
     } catch (e) {
       console.log("Failed to resize:", e);
     }
@@ -122,58 +113,12 @@ const ImageCropper = ({ data }: Props) => {
     console.log({ crop, completedCrop });
     if (!crop || !completedCrop) return;
     if (imgRef.current && crop.width && crop.height) {
-      const { dataUrl } = getCroppedImg({
+      const croppedImage = getCroppedImg({
         image: imgRef.current!,
         crop: completedCrop,
         fmt: data.type as AllowedImageFormat,
       });
-      setCroppedImageUrl(dataUrl);
-    }
-  }
-
-  //   function getCroppedImg(
-  //     image: HTMLImageElement,
-  //     crop: PixelCrop
-  //   ): { dataUrl: string; metadata: Metadata } {
-  //     const canvas = document.createElement("canvas");
-  //     const scaleX = image.naturalWidth / image.width;
-  //     const scaleY = image.naturalHeight / image.height;
-  //     console.log("Scale:", { scaleX, scaleY });
-
-  //     const w = crop.width * scaleX;
-  //     const h = crop.height * scaleY;
-  //     canvas.width = w;
-  //     canvas.height = h;
-
-  //     const ctx = canvas.getContext("2d");
-
-  //     if (ctx) {
-  //       ctx.imageSmoothingEnabled = false;
-
-  //       ctx.drawImage(image, crop.x * scaleX, crop.y * scaleY, w, h, 0, 0, w, h);
-  //     }
-
-  //     return {
-  //       //   dataUrl: canvas.toDataURL("image/png", 1.0),
-  //       dataUrl: canvas.toDataURL(`image/${data.type}`, 1.0),
-  //       metadata: { width: w, height: h, format: data.type! },
-  //       //   metadata: null,
-  //     };
-  //   }
-
-  function handleToggleAspectClick() {
-    if (aspect) {
-      setAspect(undefined);
-    } else {
-      setAspect(16 / 9);
-
-      if (imgRef.current) {
-        const { width, height } = imgRef.current;
-        const newCrop = centerAspectCrop(width, height, 16 / 9);
-        setCrop(newCrop);
-        // Updates the preview
-        setCompletedCrop(convertToPixelCrop(newCrop, width, height));
-      }
+      setCroppedImage(croppedImage);
     }
   }
 
@@ -197,39 +142,37 @@ const ImageCropper = ({ data }: Props) => {
   function handleCropChange(pxCrop: PixelCrop, pctCrop: PercentCrop) {
     console.log("\nCROP CHANGE:", { pxCrop, pctCrop });
 
-    // debounce(() => setCrop(pctCrop));
-    // setCrop(pctCrop);
     setPctCrop(pctCrop);
     setCrop(pxCrop);
 
     debounce(() => {
       if (imgRef.current) {
-        const { dataUrl, metadata } = getCroppedImg({
+        const croppedImage = getCroppedImg({
           image: imgRef.current!,
           crop: pxCrop,
           fmt: data.type as AllowedImageFormat,
         });
-        // const { dataUrl, metadata } = getCroppedImg(imgRef.current, pxCrop);
-        setCroppedImageUrl(dataUrl);
-        setCroppedImageMetadata(metadata);
+        setCroppedImage(croppedImage);
       }
     });
   }
 
-  async function handleCropComplete(pxCrop: PixelCrop) {
+  function handleCropComplete(pxCrop: PixelCrop) {
     console.log("\nCROP Complete:", { pxCrop });
 
     if (!pctCrop) return;
-    const croppedImage = await cropImage(data.dataUrl, pctCrop);
+    const croppedImage = getCroppedImg({
+      image: imgRef.current!,
+      crop: pxCrop,
+      fmt: data.type as AllowedImageFormat,
+    });
     console.log("\nCropped Image:", croppedImage);
 
+    setCompletedCrop(pxCrop);
     setCrop(pxCrop);
 
     if (croppedImage) {
-      setCroppedImageUrl(
-        dataUrlPrefix(croppedImage.metadata.type || "") + croppedImage.dataUrl
-      );
-      setCroppedImageMetadata(croppedImage.metadata);
+      setCroppedImage(croppedImage);
     }
   }
 
@@ -306,22 +249,37 @@ const ImageCropper = ({ data }: Props) => {
               //   fill
             />
           </ReactCrop>
-        ) : croppedImageUrl && croppedImageMetadata ? (
+        ) : // ) : croppedImageUrl && croppedImageMetadata ? (
+        croppedImage ? (
           <Image
             alt="alt-placeholder"
-            src={croppedImageUrl}
+            src={croppedImage.dataUrl}
             onLoad={onImageLoad}
             // style={{ maxHeight: "100%" }}
             style={{ maxWidth: "100%" }}
-            width={croppedImageMetadata.width}
-            height={croppedImageMetadata.height}
+            width={croppedImage.metadata.width}
+            height={croppedImage.metadata.height}
             //   className="object-cover"
             //   fill
             onError={(e) => {
               console.log("\nError loading image:", e);
             }}
           />
-        ) : null}
+        ) : //   <Image
+        //     alt="alt-placeholder"
+        //     src={croppedImageUrl}
+        //     onLoad={onImageLoad}
+        //     // style={{ maxHeight: "100%" }}
+        //     style={{ maxWidth: "100%" }}
+        //     width={croppedImageMetadata.width}
+        //     height={croppedImageMetadata.height}
+        //     //   className="object-cover"
+        //     //   fill
+        //     onError={(e) => {
+        //       console.log("\nError loading image:", e);
+        //     }}
+        //   />
+        null}
       </section>
 
       <section>
@@ -333,3 +291,19 @@ const ImageCropper = ({ data }: Props) => {
 };
 
 export default ImageCropper;
+
+// function handleToggleAspectClick() {
+//     if (aspect) {
+//       setAspect(undefined);
+//     } else {
+//       setAspect(16 / 9);
+
+//       if (imgRef.current) {
+//         const { width, height } = imgRef.current;
+//         const newCrop = centerAspectCrop(width, height, 16 / 9);
+//         setCrop(newCrop);
+//         // Updates the preview
+//         setCompletedCrop(convertToPixelCrop(newCrop, width, height));
+//       }
+//     }
+//   }

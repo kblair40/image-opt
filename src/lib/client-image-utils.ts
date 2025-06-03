@@ -34,3 +34,7 @@ export function getCroppedImg({ image, crop, fmt }: GetCroppedImg) {
     //   metadata: null,
   };
 }
+
+export function dataUrlPrefix(type: string) {
+  return `data:image/${type};base64,`;
+}
