@@ -58,20 +58,18 @@ function dataUrlPrefix(type: string) {
 const ImageCropper = ({ data }: Props) => {
   const [crop, setCrop] = useState<Crop>();
   const [pctCrop, setPctCrop] = useState<PercentCrop>();
-  const [aspect, setAspect] = useState<number | undefined>(
-    data.width / data.height
-  );
   //   const [aspect, setAspect] = useState<number | undefined>(16 / 9);
   const [croppedImageUrl, setCroppedImageUrl] = React.useState<string>("");
   const [croppedImageMetadata, setCroppedImageMetadata] =
     React.useState<Metadata>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [aspect, setAspect] = useState<number | undefined>(
+    data.width / data.height
+  );
   const [width, setWidth] = useState(data.width);
   const [height, setHeight] = useState(data.height);
   const [resizing, setResizing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-
-  const originalDims = { width: data.width, height: data.height };
 
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -112,40 +110,42 @@ const ImageCropper = ({ data }: Props) => {
   }
 
   function handleClickCrop() {
+    console.log({ crop, completedCrop });
     if (!crop || !completedCrop) return;
     if (imgRef.current && crop.width && crop.height) {
-      const croppedImageUrl = getCroppedImg(imgRef.current, completedCrop);
-      setCroppedImageUrl(croppedImageUrl);
+      const { dataUrl } = getCroppedImg(imgRef.current, completedCrop);
+      setCroppedImageUrl(dataUrl);
     }
   }
 
-  function getCroppedImg(image: HTMLImageElement, crop: PixelCrop): string {
+  function getCroppedImg(
+    image: HTMLImageElement,
+    crop: PixelCrop
+  ): { dataUrl: string; metadata: Metadata | null } {
     const canvas = document.createElement("canvas");
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
+    console.log("Scale:", { scaleX, scaleY });
 
-    canvas.width = crop.width * scaleX;
-    canvas.height = crop.height * scaleY;
+    const w = crop.width * scaleX;
+    const h = crop.height * scaleY;
+    canvas.width = w;
+    canvas.height = h;
 
     const ctx = canvas.getContext("2d");
 
     if (ctx) {
       ctx.imageSmoothingEnabled = false;
 
-      ctx.drawImage(
-        image,
-        crop.x * scaleX,
-        crop.y * scaleY,
-        crop.width * scaleX,
-        crop.height * scaleY,
-        0,
-        0,
-        crop.width * scaleX,
-        crop.height * scaleY
-      );
+      ctx.drawImage(image, crop.x * scaleX, crop.y * scaleY, w, h, 0, 0, w, h);
     }
 
-    return canvas.toDataURL("image/png", 1.0);
+    return {
+      //   dataUrl: canvas.toDataURL("image/png", 1.0),
+      dataUrl: canvas.toDataURL(`image/${data.type}`, 1.0),
+      //   metadata: { width: w, height: h, format: data.type! },
+      metadata: null,
+    };
   }
 
   function handleToggleAspectClick() {
@@ -188,6 +188,13 @@ const ImageCropper = ({ data }: Props) => {
     // setCrop(pctCrop);
     setPctCrop(pctCrop);
     setCrop(pxCrop);
+
+    debounce(() => {
+      if (imgRef.current) {
+        const { dataUrl } = getCroppedImg(imgRef.current, pxCrop);
+        setCroppedImageUrl(dataUrl);
+      }
+    });
   }
 
   async function handleCropComplete(pxCrop: PixelCrop) {
@@ -250,7 +257,8 @@ const ImageCropper = ({ data }: Props) => {
         </div>
       </section>
 
-      <section className="grow max-h-full overflow-y-auto centered z-50">
+      {/* <section className="grow max-h-full overflow-y-auto centered z-50"> */}
+      <section className="grow max-h-full overflow-auto centered z-50">
         {!showPreview ? (
           <ReactCrop
             crop={crop}
@@ -265,6 +273,8 @@ const ImageCropper = ({ data }: Props) => {
             onComplete={handleCropComplete}
             // className="w-full h-full relative"
             aspect={aspect}
+            ruleOfThirds={true}
+            className="w-full h-full"
           >
             <Image
               ref={imgRef}
