@@ -121,7 +121,7 @@ const ImageCropper = ({ data }: Props) => {
   function getCroppedImg(
     image: HTMLImageElement,
     crop: PixelCrop
-  ): { dataUrl: string; metadata: Metadata | null } {
+  ): { dataUrl: string; metadata: Metadata } {
     const canvas = document.createElement("canvas");
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
@@ -143,8 +143,8 @@ const ImageCropper = ({ data }: Props) => {
     return {
       //   dataUrl: canvas.toDataURL("image/png", 1.0),
       dataUrl: canvas.toDataURL(`image/${data.type}`, 1.0),
-      //   metadata: { width: w, height: h, format: data.type! },
-      metadata: null,
+      metadata: { width: w, height: h, format: data.type! },
+      //   metadata: null,
     };
   }
 
@@ -191,8 +191,9 @@ const ImageCropper = ({ data }: Props) => {
 
     debounce(() => {
       if (imgRef.current) {
-        const { dataUrl } = getCroppedImg(imgRef.current, pxCrop);
+        const { dataUrl, metadata } = getCroppedImg(imgRef.current, pxCrop);
         setCroppedImageUrl(dataUrl);
+        setCroppedImageMetadata(metadata);
       }
     });
   }
@@ -204,8 +205,6 @@ const ImageCropper = ({ data }: Props) => {
     const croppedImage = await cropImage(data.dataUrl, pctCrop);
     console.log("\nCropped Image:", croppedImage);
 
-    // debounce(() => setCrop(pctCrop));
-    // setCrop(pctCrop);
     setCrop(pxCrop);
 
     if (croppedImage) {

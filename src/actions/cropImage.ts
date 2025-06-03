@@ -9,12 +9,21 @@ import type {
 import { imageSize } from "image-size";
 import type { PercentCrop } from "react-image-crop";
 import type { ISizeCalculationResult } from "image-size/types/interface";
+import type { Channels } from "sharp";
 
 import type { Dimensions } from "@/lib/image-types";
 import { resizeImage as _resizeImage } from "@/lib/image-utils";
 
+type OptMetadata = ISizeCalculationResult &
+  Omit<OutputInfo, "channels" | "premultiplied">;
+// export type OptimizedMetadata = {
+//   metadata: ISizeCalculationResult & OutputInfo;
+//   dataUrl: string;
+// };
+
 export type OptimizedMetadata = {
-  metadata: ISizeCalculationResult & OutputInfo;
+  metadata: OptMetadata;
+  //   metadata: ISizeCalculationResult & OutputInfo;
   dataUrl: string;
 };
 

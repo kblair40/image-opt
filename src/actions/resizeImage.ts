@@ -12,8 +12,21 @@ import type { ISizeCalculationResult } from "image-size/types/interface";
 import type { Dimensions } from "@/lib/image-types";
 import { resizeImage as _resizeImage } from "@/lib/image-utils";
 
+// Original
+// export type OptimizedMetadata = {
+//   metadata: ISizeCalculationResult & OutputInfo;
+//   dataUrl: string;
+// };
+
+// Makes channels, premultiplied and size keys optional
+type OptionalMetadata = Omit<
+  OutputInfo,
+  "channels" | "premultiplied" | "size"
+> &
+  Partial<Pick<OutputInfo, "channels" | "premultiplied" | "size">>;
+
 export type OptimizedMetadata = {
-  metadata: ISizeCalculationResult & OutputInfo;
+  metadata: ISizeCalculationResult & OptionalMetadata;
   dataUrl: string;
 };
 
