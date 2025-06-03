@@ -1,8 +1,13 @@
 import type { PixelCrop } from "react-image-crop";
-import type { AllowedImageType } from "./image-types";
+import type { AllowedImageFormat } from "./image-types";
 // import type { FormatEnum } from "sharp";
 
-function getCroppedImg(image: HTMLImageElement, crop: PixelCrop) {
+type GetCroppedImg = {
+  image: HTMLImageElement;
+  crop: PixelCrop;
+  fmt: AllowedImageFormat;
+};
+function getCroppedImg({ image, crop, fmt }: GetCroppedImg) {
   //   ): { dataUrl: string; metadata: Metadata } {
   const canvas = document.createElement("canvas");
   const scaleX = image.naturalWidth / image.width;
@@ -24,8 +29,8 @@ function getCroppedImg(image: HTMLImageElement, crop: PixelCrop) {
 
   return {
     //   dataUrl: canvas.toDataURL("image/png", 1.0),
-    dataUrl: canvas.toDataURL(`image/${data.type}`, 1.0),
-    metadata: { width: w, height: h, format: data.type! },
+    dataUrl: canvas.toDataURL(`image/${fmt}`, 1.0),
+    metadata: { width: w, height: h, format: fmt },
     //   metadata: null,
   };
 }
