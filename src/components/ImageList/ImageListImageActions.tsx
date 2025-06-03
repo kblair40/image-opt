@@ -11,10 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { AllowedImageType } from "@/lib/image-types";
+import type { AllowedImageFormat } from "@/lib/image-types";
 
 type Props = {
-  onClickConvert: (type: AllowedImageType) => void;
+  onClickConvert: (type: AllowedImageFormat) => void;
   onClickCrop: () => void;
   loading: boolean;
 };

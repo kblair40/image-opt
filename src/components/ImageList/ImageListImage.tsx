@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ImageListImageActions from "./ImageListImageActions";
 import type {
-  AllowedImageType,
+  AllowedImageFormat,
   OptimizedMetadata,
   Metadata,
 } from "@/lib/image-types";
@@ -64,7 +64,7 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
     getMetadata();
   }, [getMetadata]);
 
-  async function handleClickConvert(type: AllowedImageType) {
+  async function handleClickConvert(type: AllowedImageFormat) {
     console.log("Convert to:", type);
     if (imgUrl) {
       const res = await compressImage(imgUrl, type);

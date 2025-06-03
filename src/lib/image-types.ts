@@ -26,8 +26,6 @@ export type AllowedImageFormat = keyof Pick<
   "jpeg" | "jpg" | "png" | "avif" | "webp"
 >;
 
-export type AllowedImageType = "jpeg" | "png" | "webp" | "avif";
-
 export type AnyOutputOptions =
   | JpegOptions
   | PngOptions
