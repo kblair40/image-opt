@@ -2,20 +2,18 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
-import type { ISizeCalculationResult } from "image-size/types/interface";
+import Image from "next/image";
 
-import ListImage from "../Image/Image";
 import { getImageMetadata } from "@/actions/getImageMetadata";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ImageListImageActions from "./ImageListImageActions";
-import type { AllowedImageType, OptimizedMetadata } from "@/lib/image-types";
+import type {
+  AllowedImageType,
+  OptimizedMetadata,
+  Metadata,
+} from "@/lib/image-types";
 import { compressImage } from "@/actions/compressImage";
-import type {} from "@/actions/resizeImage";
-
-export type Metadata = ISizeCalculationResult & {
-  bytes: number;
-};
 
 type Props = {
   image: File;
@@ -98,9 +96,9 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
           {metadata ? (
             <div className="flex items-end gap-x-4">
               <Badge variant="outline" className="font-semibold">
-                {metadata.type?.toUpperCase()}
+                {metadata.format.toUpperCase()}
               </Badge>
-              <p className="text-sm">{getSizeString(metadata.bytes)}</p>
+              <p className="text-sm">{getSizeString(metadata.size)}</p>
               <p className="text-sm">
                 {metadata.width} x {metadata.height}
               </p>
@@ -112,7 +110,6 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
           {optMetadata && (
             <div className="flex items-end ml-4 gap-x-4">
               <div className="">{">"}</div>
-              {/* <p>{getSizeString(optMetadata.metadata.size)}</p> */}
               <p>{getSizeString(optMetadata.metadata.size)}</p>
               <p>
                 ({optMetadata.metadata.width} x {optMetadata.metadata.height})
@@ -124,18 +121,6 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
 
       <div>
         <div className="flex gap-x-2 items-center">
-          {/* <Select>
-            <SelectTrigger size="sm">
-              <SelectValue placeholder="Image Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="jpeg">JPEG</SelectItem>
-              <SelectItem value="png">PNG</SelectItem>
-              <SelectItem value="webp">WEBP</SelectItem>
-              <SelectItem value="avif">AVIF</SelectItem>
-            </SelectContent>
-          </Select> */}
-
           <Button className="px-2.5" size="sm">
             Compress
           </Button>
@@ -150,12 +135,18 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
 
       <div className="fixed bottom-2 left-2 z-50 border-2 border-neutral-600 w-fit max-w-dvw overlow-x-auto max-h-60 overflow-y-scroll">
         {optMetadata && (
-          <ListImage
+          <Image
             alt="placeholder alt text"
             src={optMetadata.dataUrl}
             width={optMetadata.metadata.width}
             height={optMetadata.metadata.height}
           />
+          //   <ListImage
+          //     alt="placeholder alt text"
+          //     src={optMetadata.dataUrl}
+          //     width={optMetadata.metadata.width}
+          //     height={optMetadata.metadata.height}
+          //   />
         )}
       </div>
     </div>

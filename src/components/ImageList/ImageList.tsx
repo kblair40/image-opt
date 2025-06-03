@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
-import clsx from "clsx";
+import React, { useState } from "react";
 
+import type { Metadata } from "@/lib/image-types";
 import { useImagesContext } from "@/hooks/useImagesContext";
-import ImageListImage, { type Metadata } from "./ImageListImage";
+import ImageListImage from "./ImageListImage";
+// import ImageListImage, { type Metadata } from "./ImageListImage";
 import ImageEditDrawer from "../ImageEditDrawer/ImageEditDrawer";
 
 type Props = {};

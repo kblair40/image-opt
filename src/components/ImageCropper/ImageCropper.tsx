@@ -6,7 +6,7 @@ import { Crop as CropIcon } from "lucide-react";
 import ReactCrop, {
   centerCrop,
   makeAspectCrop,
-  convertToPixelCrop,
+  //   convertToPixelCrop,
 } from "react-image-crop";
 import type { Crop, PixelCrop, PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -21,17 +21,10 @@ import type {
   Dimensions,
   CroppedImage,
 } from "@/lib/image-types";
-import { resizeImage } from "@/actions/resizeImage";
+// import { resizeImage } from "@/actions/resizeImage";
 import { cropImage } from "@/actions/cropImage";
 import { useDebounceFn } from "@/hooks/useDebounceFn";
-// import type { Metadata } from "../ImageList/ImageListImage";
-import type { OptimizedMetadata } from "@/actions/resizeImage";
-// import Image from "../Image/Image";
-// import { AspectRatio } from "@/components/ui/aspect-ratio";
-// import SharpImage from "@/lib/SharpImage";
 import { getCroppedImg } from "@/lib/client-image-utils";
-
-type Metadata = OptimizedMetadata["metadata"];
 
 type Props = {
   data: EditData;
@@ -73,13 +66,15 @@ const ImageCropper = ({ data }: Props) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const { run: debounce } = useDebounceFn();
 
-  if (!data.type) {
-    return (
-      <div className="h-40 centered text-red-600">
-        <p>Image type must be provided</p>
-      </div>
-    );
-  }
+  const fmt = data.format as AllowedImageFormat;
+
+  //   if (!data.format) {
+  //     return (
+  //       <div className="h-40 centered text-red-600">
+  //         <p>Image type must be provided</p>
+  //       </div>
+  //     );
+  //   }
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (aspect) {
@@ -97,7 +92,7 @@ const ImageCropper = ({ data }: Props) => {
       const croppedImage = getCroppedImg({
         image: imgRef.current!,
         crop: { x: 0, y: 0, width, height, unit: "px" },
-        fmt: data.type as AllowedImageFormat,
+        fmt,
       });
 
       setCroppedImage(croppedImage);
@@ -116,7 +111,7 @@ const ImageCropper = ({ data }: Props) => {
       const croppedImage = getCroppedImg({
         image: imgRef.current!,
         crop: completedCrop,
-        fmt: data.type as AllowedImageFormat,
+        fmt,
       });
       setCroppedImage(croppedImage);
     }
@@ -150,7 +145,7 @@ const ImageCropper = ({ data }: Props) => {
         const croppedImage = getCroppedImg({
           image: imgRef.current!,
           crop: pxCrop,
-          fmt: data.type as AllowedImageFormat,
+          fmt,
         });
         setCroppedImage(croppedImage);
       }
@@ -164,7 +159,7 @@ const ImageCropper = ({ data }: Props) => {
     const croppedImage = getCroppedImg({
       image: imgRef.current!,
       crop: pxCrop,
-      fmt: data.type as AllowedImageFormat,
+      fmt,
     });
     console.log("\nCropped Image:", croppedImage);
 

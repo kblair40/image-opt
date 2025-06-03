@@ -2,7 +2,6 @@
 
 import sharp from "sharp";
 import type { OutputInfo, ResizeOptions } from "sharp";
-import { imageSize } from "image-size";
 
 import type {
   OutputOptions,
@@ -31,44 +30,39 @@ export async function compressImage(
   const outputOptions = { ...DEFAULT_OUTPUT_OPTIONS[toType], ...options };
   try {
     const buf = Buffer.from(dataUrl.split(",")[1], "base64");
-    const metadata = await imageSize(buf);
 
     let img = sharp(buf);
+    const metadata = await img.metadata();
     console.log("metadata:", metadata);
+
     if (options.resize) {
       img = resizeImage(img, options.resize);
     }
 
-    const imgOut = img
-      //   .resize(Math.round(x.width / 2), Math.round(x.height / 2))
-      //   .png()
-      .toFormat(toType, outputOptions);
-    //   .toFormat(toType, {
-    //     quality: 80,
-    //   });
+    const imgOut = img.toFormat(toType, outputOptions);
 
     const bufOut = await imgOut.toBuffer();
 
     const b64Url = bufOut.toString("base64");
-    // const b64Url = bufOut.toString("base64url");
-    const mdOut = await imageSize(bufOut);
+    const mdOut = await imgOut.metadata();
 
-    const file: OutputInfo = await new Promise(async (resolve, reject) => {
-      try {
-        imgOut.toFile("tmp", (err, info) => {
-          console.log("\nErr/Info:", { err, info }, "\n");
-          resolve(info);
-        });
-      } catch (e) {
-        console.log("\nError creating file:", e, "n");
-        reject(e);
+    const outputInfo: OutputInfo = await new Promise(
+      async (resolve, reject) => {
+        try {
+          imgOut.toFile("tmp", (err, info) => {
+            console.log("\nErr/Info:", { err, info }, "\n");
+            resolve(info);
+          });
+        } catch (e) {
+          console.log("\nError creating file:", e, "n");
+          reject(e);
+        }
       }
-    });
-    console.log("\nFile:", file);
+    );
+    console.log("\noutputInfo:", outputInfo);
 
     console.log("\n");
-    return { dataUrl: b64Url, metadata: Object.assign(mdOut, file) };
-    // return { dataUrl: b64Url, metadata: mdOut };
+    return { dataUrl: b64Url, metadata: mdOut, outputInfo };
   } catch (e) {
     console.log("\nError extracting image metadata:", e, "\n");
     return null;

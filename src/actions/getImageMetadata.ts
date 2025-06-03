@@ -1,15 +1,13 @@
 "use server";
 
-import { imageSize } from "image-size";
-import type { ISizeCalculationResult } from "image-size/types/interface";
+import sharp from "sharp";
 
 export async function getImageMetadata(
   dataUrl: string
-): Promise<ISizeCalculationResult | null> {
+): Promise<sharp.Metadata | null> {
   try {
-    const buf = Buffer.from(dataUrl.split(",")[1], "base64");
-    const metadata = await imageSize(buf);
-    console.log("\nmetadata:", metadata);
+    const img = sharp(Buffer.from(dataUrl.split(",")[1], "base64"));
+    const metadata = await img.metadata();
 
     return metadata;
   } catch (e) {
