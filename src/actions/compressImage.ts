@@ -12,9 +12,10 @@ import type { ISizeCalculationResult } from "image-size/types/interface";
 import type {
   OutputOptions,
   AnyOutputOptions,
-  AllowedImageType,
+//   AllowedImageType,
+  AllowedImageFormat
 } from "@/lib/image-types";
-import { resizeImage } from "@/lib/image-utils";
+import { resizeImage } from "@/lib/server-image-utils";
 
 export type OptimizedMetadata = {
   metadata: ISizeCalculationResult & OutputInfo;
@@ -23,6 +24,7 @@ export type OptimizedMetadata = {
 
 const DEFAULT_OUTPUT_OPTIONS: OutputOptions = {
   jpeg: {},
+  jpg: {},
   png: {},
   webp: {},
   avif: {},
@@ -30,7 +32,7 @@ const DEFAULT_OUTPUT_OPTIONS: OutputOptions = {
 
 export async function compressImage(
   dataUrl: string,
-  toType: AllowedImageType,
+  toType: AllowedImageFormat,
   options: {
     output: AnyOutputOptions;
     resize: ResizeOptions | null;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Crop as CropIcon } from "lucide-react";
 import ReactCrop, {
@@ -24,6 +24,7 @@ import { useDebounceFn } from "@/hooks/useDebounceFn";
 import type { OptimizedMetadata } from "@/actions/resizeImage";
 // import Image from "../Image/Image";
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
+// import SharpImage from "@/lib/SharpImage";
 
 type Metadata = OptimizedMetadata["metadata"];
 
@@ -72,8 +73,23 @@ const ImageCropper = ({ data }: Props) => {
   const [showPreview, setShowPreview] = useState(false);
 
   const imgRef = useRef<HTMLImageElement>(null);
+  //   const sharpImage = useRef(
+  //     new SharpImage({
+  //       dataUrl: data.dataUrl,
+  //       el: "" as unknown as HTMLImageElement,
+  //       //   el: imgRef.current,
+  //     })
+  //   );
+//   const sharpImage = useRef<SharpImage | null>(null);
 
   const { run: debounce } = useDebounceFn();
+
+//   useEffect(() => {
+//     sharpImage.current = new SharpImage({
+//       dataUrl: data.dataUrl,
+//       el: imgRef.current!,
+//     });
+//   }, [data.dataUrl]);
 
   //   const { width, height, type } = data;
   //   const dataUrl = `data:image/${type};base64,` + data.dataUrl;

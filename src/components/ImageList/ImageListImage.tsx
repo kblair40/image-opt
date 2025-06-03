@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import type { ISizeCalculationResult } from "image-size/types/interface";
-import { Crop } from "lucide-react";
 
 import ListImage from "../Image/Image";
 import { getImageMetadata } from "@/actions/getImageMetadata";

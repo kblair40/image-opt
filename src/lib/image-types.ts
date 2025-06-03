@@ -4,7 +4,13 @@ import type {
   WebpOptions,
   AvifOptions,
   ResizeOptions,
+  FormatEnum,
 } from "sharp";
+
+export type AllowedImageFormat = keyof Pick<
+  FormatEnum,
+  "jpeg" | "jpg" | "png" | "avif" | "webp"
+>;
 
 export type AllowedImageType = "jpeg" | "png" | "webp" | "avif";
 
@@ -15,6 +21,7 @@ export type AnyOutputOptions =
   | AvifOptions;
 export interface OutputOptions {
   jpeg: JpegOptions;
+  jpg: JpegOptions;
   png: PngOptions;
   webp: WebpOptions;
   avif: AvifOptions;

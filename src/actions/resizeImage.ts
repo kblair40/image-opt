@@ -10,7 +10,7 @@ import { imageSize } from "image-size";
 import type { ISizeCalculationResult } from "image-size/types/interface";
 
 import type { Dimensions } from "@/lib/image-types";
-import { resizeImage as _resizeImage } from "@/lib/image-utils";
+import { resizeImage as _resizeImage } from "@/lib/server-image-utils";
 
 // Original
 // export type OptimizedMetadata = {
