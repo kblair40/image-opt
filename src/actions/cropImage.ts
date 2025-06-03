@@ -1,32 +1,12 @@
 "use server";
 
 import sharp from "sharp";
-import type {
-  OutputInfo,
-  // OutputOptions
-  ResizeOptions,
-} from "sharp";
+import type { OutputInfo } from "sharp";
 import { imageSize } from "image-size";
 import type { PercentCrop } from "react-image-crop";
-import type { ISizeCalculationResult } from "image-size/types/interface";
-import type { Channels } from "sharp";
 
-import type { Dimensions } from "@/lib/image-types";
+import type { OptimizedMetadata } from "@/lib/image-types";
 import { resizeImage as _resizeImage } from "@/lib/server-image-utils";
-import type { OptimizedMetadata } from "./resizeImage";
-
-// type OptMetadata = ISizeCalculationResult &
-//   Omit<OutputInfo, "channels" | "premultiplied">;
-// // export type OptimizedMetadata = {
-// //   metadata: ISizeCalculationResult & OutputInfo;
-// //   dataUrl: string;
-// // };
-
-// export type OptimizedMetadata = {
-//   metadata: OptMetadata;
-//   //   metadata: ISizeCalculationResult & OutputInfo;
-//   dataUrl: string;
-// };
 
 export async function cropImage(
   dataUrl: string,

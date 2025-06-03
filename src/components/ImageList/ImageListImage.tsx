@@ -9,12 +9,9 @@ import { getImageMetadata } from "@/actions/getImageMetadata";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ImageListImageActions from "./ImageListImageActions";
-import type { AllowedImageType } from "@/lib/image-types";
-import {
-  compressImage,
-  // type OptimizedMetadata
-} from "@/actions/compressImage";
-import type { OptimizedMetadata } from "@/actions/resizeImage";
+import type { AllowedImageType, OptimizedMetadata } from "@/lib/image-types";
+import { compressImage } from "@/actions/compressImage";
+import type {} from "@/actions/resizeImage";
 
 export type Metadata = ISizeCalculationResult & {
   bytes: number;

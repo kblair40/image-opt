@@ -5,11 +5,24 @@ import type {
   AvifOptions,
   ResizeOptions,
   FormatEnum,
+  OutputInfo
 } from "sharp";
+import type { ISizeCalculationResult } from "image-size/types/interface";
 
 import { getCroppedImg } from "./client-image-utils";
 
-export type CroppedImage = ReturnType<typeof getCroppedImg>
+export type CroppedImage = ReturnType<typeof getCroppedImg>;
+
+type OptionalMetadata = Omit<
+  OutputInfo,
+  "channels" | "premultiplied" | "size"
+> &
+  Partial<Pick<OutputInfo, "channels" | "premultiplied" | "size">>;
+
+export type OptimizedMetadata = {
+  metadata: ISizeCalculationResult & OptionalMetadata;
+  dataUrl: string;
+};
 
 export type AllowedImageFormat = keyof Pick<
   FormatEnum,

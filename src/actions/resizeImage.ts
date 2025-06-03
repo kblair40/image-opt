@@ -9,32 +9,13 @@ import type {
 import { imageSize } from "image-size";
 import type { ISizeCalculationResult } from "image-size/types/interface";
 
-import type { Dimensions } from "@/lib/image-types";
+import type { Dimensions, OptimizedMetadata } from "@/lib/image-types";
 import { resizeImage as _resizeImage } from "@/lib/server-image-utils";
-
-// Original
-// export type OptimizedMetadata = {
-//   metadata: ISizeCalculationResult & OutputInfo;
-//   dataUrl: string;
-// };
-
-// Makes channels, premultiplied and size keys optional
-type OptionalMetadata = Omit<
-  OutputInfo,
-  "channels" | "premultiplied" | "size"
-> &
-  Partial<Pick<OutputInfo, "channels" | "premultiplied" | "size">>;
-
-export type OptimizedMetadata = {
-  metadata: ISizeCalculationResult & OptionalMetadata;
-  dataUrl: string;
-};
 
 export async function resizeImage(
   dataUrl: string,
   dims: Dimensions
 ): Promise<OptimizedMetadata | null> {
-  // ): Promise<OptimizedMetadata | null> {
   try {
     const buf = Buffer.from(dataUrl.split(",")[1], "base64");
     const metadata = await imageSize(buf);

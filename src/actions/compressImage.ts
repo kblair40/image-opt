@@ -1,26 +1,16 @@
 "use server";
 
 import sharp from "sharp";
-import type {
-  OutputInfo,
-  // OutputOptions
-  ResizeOptions,
-} from "sharp";
+import type { OutputInfo, ResizeOptions } from "sharp";
 import { imageSize } from "image-size";
-import type { ISizeCalculationResult } from "image-size/types/interface";
 
 import type {
   OutputOptions,
   AnyOutputOptions,
-//   AllowedImageType,
-  AllowedImageFormat
+  AllowedImageFormat,
+  OptimizedMetadata,
 } from "@/lib/image-types";
 import { resizeImage } from "@/lib/server-image-utils";
-
-export type OptimizedMetadata = {
-  metadata: ISizeCalculationResult & OutputInfo;
-  dataUrl: string;
-};
 
 const DEFAULT_OUTPUT_OPTIONS: OutputOptions = {
   jpeg: {},
