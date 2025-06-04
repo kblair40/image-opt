@@ -88,7 +88,7 @@ const ImageListImage2 = ({ image, onClickEditImage }: Props) => {
     <div className="text-sm overflow-hidden rounded-sm border border-neutral-300 relative h-40 centered-col">
       {loading || !imgUrl ? (
         <div className="centered">
-          <div className="h-6 w-6 border rounded-lg animate-spin" />
+          <div className="h-8 w-8 border border-neutral-600 rounded-md animate-spin" />
         </div>
       ) : (
         <Image
@@ -101,6 +101,8 @@ const ImageListImage2 = ({ image, onClickEditImage }: Props) => {
     </div>
   );
 };
+
+
 
 //   return (
 //     <div className="flex justify-between items-center text-sm">
