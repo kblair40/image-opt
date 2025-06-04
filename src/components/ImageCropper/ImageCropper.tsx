@@ -30,6 +30,13 @@ type Props = {
   data: EditData;
 };
 
+function getSizeString(bytes?: number) {
+  if (!bytes) return "?kb";
+  const kb = bytes / 1000;
+
+  return kb >= 1000 ? (kb / 1000).toFixed(1) + "mb" : kb.toFixed(1) + " kb";
+}
+
 function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
@@ -60,6 +67,7 @@ const ImageCropper = ({ data }: Props) => {
   );
   const [width, setWidth] = useState(data.width);
   const [height, setHeight] = useState(data.height);
+  const [quality, setQuality] = useState(90);
   const [resizing, setResizing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -102,19 +110,6 @@ const ImageCropper = ({ data }: Props) => {
 
     setResizing(false);
     console.groupEnd();
-  }
-
-  function handleClickCrop() {
-    console.log({ crop, completedCrop });
-    if (!crop || !completedCrop) return;
-    if (imgRef.current && crop.width && crop.height) {
-      const croppedImage = getCroppedImg({
-        image: imgRef.current!,
-        crop: completedCrop,
-        fmt,
-      });
-      setCroppedImage(croppedImage);
-    }
   }
 
   const handleChangeDimensions = (dim: "height" | "width", value: string) => {
@@ -173,17 +168,28 @@ const ImageCropper = ({ data }: Props) => {
 
   return (
     <div className="px-4 w-full h-dvh max-h-dvh flex flex-col">
-      <section className="pt-3 pb-1 flex gap-x-4">
-        <Button onClick={() => setShowPreview((cur) => !cur)}>
-          Show {showPreview ? "Original" : "Preview"}
-        </Button>
-        <Button
+      <section className="pt-3 pb-2 flex justify-between">
+        <div className="flex gap-x-4">
+        {/* <Button
           onClick={handleClickCrop}
           variant="outline"
           className={cn("p-1")}
         >
           <CropIcon className="size-5" />
-        </Button>
+        </Button> */}
+
+        <div className="flex gap-x-2">
+          <Label>Quality</Label>
+          <Input
+            type="number"
+            value={quality}
+            onChange={(e) => {
+              setQuality(parseFloat(e.target.value));
+            }}
+            min={1}
+            max={100}
+          />
+        </div>
 
         <div className="flex gap-x-2">
           <Label>Width</Label>
@@ -210,6 +216,13 @@ const ImageCropper = ({ data }: Props) => {
             max={data.height}
           />
         </div>
+
+        <Button onClick={() => setShowPreview((cur) => !cur)}>
+          Show {showPreview ? "Original" : "Preview"}
+        </Button>
+        </div>
+
+        <div>Metadata Here</div>
       </section>
 
       {/* <section className="grow max-h-full overflow-y-auto centered z-50"> */}
