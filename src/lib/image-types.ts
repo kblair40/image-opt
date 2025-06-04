@@ -15,12 +15,6 @@ export type Metadata = sharp.Metadata;
 
 export type CroppedImage = ReturnType<typeof getCroppedImg>;
 
-export type OptimizedMetadata = {
-  metadata: Metadata;
-  outputInfo: OutputInfo;
-  dataUrl: string;
-};
-
 export type AllowedImageFormat = keyof Pick<
   FormatEnum,
   "jpeg" | "jpg" | "png" | "avif" | "webp"
@@ -41,3 +35,22 @@ export interface OutputOptions {
 
 // export type Dimensions = { width: number; height: number };
 export type Dimensions = Required<Pick<ResizeOptions, "width" | "height">>;
+
+export type OptimizedMetadata = {
+  metadata: Metadata;
+  outputInfo: OutputInfo;
+  dataUrl: string;
+};
+
+export type BufferField = keyof Pick<
+  Metadata,
+  "exif" | "icc" | "iptc" | "xmp" | "tifftagPhotoshop"
+>;
+
+export interface SerializedMetadata extends Omit<Metadata, BufferField> {
+  exif: string | undefined;
+  icc: string | undefined;
+  iptc: string | undefined;
+  xmp: string | undefined;
+  tifftagPhotoshop: string | undefined;
+}
