@@ -14,6 +14,7 @@ import type {
   Metadata,
 } from "@/lib/image-types";
 import { compressImage } from "@/actions/compressImage";
+import { deserializeMetadata } from "@/lib/client-image-utils";
 
 type Props = {
   image: File;
@@ -52,7 +53,9 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
         const md = await getImageMetadata(reader.result);
         console.log("\nMETADATA:", md, "\n");
 
-        setMetadata({ ...md, bytes: image.size } as Metadata);
+        if (md) {
+          setMetadata({ ...deserializeMetadata(md) } as Metadata);
+        }
         setLoading(false);
       }
     };

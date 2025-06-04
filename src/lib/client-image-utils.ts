@@ -1,6 +1,30 @@
 import type { PixelCrop } from "react-image-crop";
-import type { AllowedImageFormat } from "./image-types";
-// import type { FormatEnum } from "sharp";
+
+import type {
+  AllowedImageFormat,
+  Metadata,
+  SerializedMetadata,
+  BufferField,
+} from "./image-types";
+
+const BUFFER_FIELDS: BufferField[] = [
+  "exif",
+  "icc",
+  "iptc",
+  "xmp",
+  "tifftagPhotoshop",
+];
+
+export function deserializeMetadata(serMetadata: SerializedMetadata): Metadata {
+  const deserFields: any = {};
+  for (const key of BUFFER_FIELDS) {
+    if (serMetadata[key] !== undefined) {
+      deserFields[key] = Buffer.from(serMetadata[key]);
+    }
+  }
+
+  return { ...serMetadata, ...deserFields } as Metadata;
+}
 
 type GetCroppedImg = {
   image: HTMLImageElement;
