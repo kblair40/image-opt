@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import Image from "next/image";
+import { Settings } from "lucide-react";
 
 import { getImageMetadata } from "@/actions/getImageMetadata";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +23,13 @@ type Props = {
   onClickEditImage: (image: File, md: Metadata, dataUrl: string) => void;
 };
 
+function getSizeString(bytes?: number) {
+  if (!bytes) return "?kb";
+  const kb = bytes / 1000;
+
+  return kb >= 1000 ? (kb / 1000).toFixed(1) + "mb" : kb.toFixed(1) + " kb";
+}
+
 const ImageListImage2 = ({ image, onClickEditImage }: Props) => {
   const [imgUrl, setImgUrl] = useState<string>();
   const [loading, setLoading] = useState(true);
@@ -30,13 +38,6 @@ const ImageListImage2 = ({ image, onClickEditImage }: Props) => {
   );
   const [metadata, setMetadata] = useState<Metadata>();
   const [optimizedImage, setOptimizedImage] = useState<OptimizedMetadata>();
-
-  function getSizeString(bytes?: number) {
-    if (!bytes) return "?kb";
-    const kb = bytes / 1000;
-
-    return kb >= 1000 ? (kb / 1000).toFixed(1) + "mb" : kb.toFixed(1) + " kb";
-  }
 
   const getMetadata = useCallback(async () => {
     const reader = new FileReader();
@@ -86,90 +87,68 @@ const ImageListImage2 = ({ image, onClickEditImage }: Props) => {
 
   return (
     <div className="text-sm overflow-hidden rounded-sm border border-neutral-300 relative h-40 centered-col">
-      {loading || !imgUrl ? (
+      {loading || !imgUrl || !metadata ? (
         <div className="centered">
           <div className="h-8 w-8 border border-neutral-600 rounded-md animate-spin" />
         </div>
       ) : (
-        <Image
-          alt={image.name}
-          src={imgUrl}
-          style={{ objectFit: "cover" }}
-          fill
-        />
+        <>
+          <Image
+            alt={image.name}
+            src={imgUrl}
+            style={{ objectFit: "cover" }}
+            fill
+          />
+
+          <Controls
+            metadata={metadata}
+            image={image}
+            onClickEditImage={onClickEditImage}
+          />
+        </>
       )}
     </div>
   );
 };
 
-
-
-//   return (
-//     <div className="flex justify-between items-center text-sm">
-//       <div
-//         className={clsx(
-//           "flex flex-col gap-y-1"
-//           //
-//         )}
-//       >
-//         <section>
-//           <p className="font-semibold">{image.name}</p>
-//         </section>
-
-//         <section className="flex justify-between">
-//           {metadata ? (
-//             <div className="flex items-end gap-x-4">
-//               <Badge variant="outline" className="font-semibold">
-//                 {metadata.format.toUpperCase()}
-//               </Badge>
-//               <p className="text-sm">{getSizeString(metadata.size)}</p>
-//               <p className="text-sm">
-//                 {metadata.width} x {metadata.height}
-//               </p>
-//             </div>
-//           ) : (
-//             <div />
-//           )}
-
-//           {optimizedImage && (
-//             <div className="flex items-end ml-4 gap-x-4">
-//               <div className="">{">"}</div>
-//               <p>{getSizeString(optimizedImage.metadata.size)}</p>
-//               <p>
-//                 ({optimizedImage.metadata.width} x{" "}
-//                 {optimizedImage.metadata.height})
-//               </p>
-//             </div>
-//           )}
-//         </section>
-//       </div>
-
-//       <div>
-//         <div className="flex gap-x-2 items-center">
-//           <Button className="px-2.5" size="sm">
-//             Compress
-//           </Button>
-
-//           <ImageListImageActions
-//             loading={loading || !metadata || !imgUrl}
-//             onClickCrop={() => onClickEditImage(image, metadata!, imgUrl!)}
-//             onClickConvert={handleClickConvert}
-//           />
-//         </div>
-//       </div>
-
-//       <div className="fixed bottom-2 left-2 z-50 border-2 border-neutral-600 w-fit max-w-dvw overlow-x-auto max-h-60 overflow-y-scroll">
-//         {optimizedImage && (
-//           <Image
-//             alt="placeholder alt text"
-//             src={optimizedImage.dataUrl}
-//             width={optimizedImage.metadata.width}
-//             height={optimizedImage.metadata.height}
-//           />
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
 export default ImageListImage2;
+
+function Controls({
+  image,
+  onClickEditImage,
+  metadata,
+}: Props & { metadata: Metadata }) {
+  const size = getSizeString(metadata.size);
+  const dims = metadata.width + " x " + metadata.height;
+  return (
+    <div
+      className={clsx(
+        "absolute top-0 left-0 right-0 bottom-0 w-full h-full",
+        // "z-50",
+        // "bg-linear-to-t from-neutral-950/90 from-0% to-neutral-950/60 to-40%",
+        "bg-linear-to-t from-neutral-900/90 from-10% via-neutral-800/80 via-50% to-neutral-800/30 to-80%",
+        // "border-2 border-neutral-800"
+        "flex items-end"
+      )}
+    >
+      <div className="w-full flex flex-col justify-end px-1.5 pb-1 text-white text-xs">
+        {/* <div> */}
+        <p>{image.name}</p>
+        {/* </div> */}
+
+        <div className="w-full flex items-end justify-between">
+          <div className="flex gap-x-4">
+            <p>{size}</p>
+            <p>{dims}</p>
+          </div>
+
+          <div className="absolute bottom-1 right-1 cursor-pointer">
+            <Button size="icon" className="cursor-pointer hover:bg-neutral-800">
+              <Settings />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
