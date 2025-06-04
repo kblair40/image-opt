@@ -144,12 +144,6 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
             width={optMetadata.metadata.width}
             height={optMetadata.metadata.height}
           />
-          //   <ListImage
-          //     alt="placeholder alt text"
-          //     src={optMetadata.dataUrl}
-          //     width={optMetadata.metadata.width}
-          //     height={optMetadata.metadata.height}
-          //   />
         )}
       </div>
     </div>
@@ -157,40 +151,3 @@ const ImageListImage = ({ image, onClickEditImage }: Props) => {
 };
 
 export default ImageListImage;
-
-// {/* <div
-//   className={clsx(
-//     "flex flex-col gap-y-1"
-//     //
-//   )}
-// >
-//   <section>
-//     <p className="font-medium">{image.name}</p>
-//   </section>
-
-//   <section className="flex gap-x-4">
-//     {metadata && (
-//       <>
-//         <Badge variant="outline" className="font-semibold">
-//           {metadata.type?.toUpperCase()}
-//         </Badge>
-//         <p className="text-sm">{metadata.sizeString}</p>
-//         <p className="text-sm">
-//           {metadata.width} x {metadata.height}
-//         </p>
-//       </>
-//     )}
-//   </section>
-//   {/* <p>{imgUrl}</p> */}
-
-//   {/* {metadata && <pre>{JSON.stringify(metadata, null, 2)}</pre>} */}
-
-//   {/* {imgUrl && metadata && (
-//         <ListImage
-//           alt="placeholder alt text"
-//           src={imgUrl}
-//           width={metadata.width}
-//           height={metadata.height}
-//         />
-//       )} */}
-// </div>; */}

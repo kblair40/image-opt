@@ -22,10 +22,14 @@ const ImageList = (props: Props) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full border-collapse">
       {acceptedImages.map((img, i) => {
         return (
-          <div key={i} className="border-y border-neutral-500 py-1 px-2">
+          // <div key={i} className="border-t border-neutral-500 py-1 px-2">
+          <div
+            key={i}
+            className="border-b first:border-y border-neutral-500 py-1 px-2"
+          >
             <ImageListImage
               onClickEditImage={handleClickEditImage}
               image={img}
