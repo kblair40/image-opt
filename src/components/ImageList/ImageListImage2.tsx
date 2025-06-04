@@ -104,6 +104,7 @@ const ImageListImage2 = ({ image, onClickEditImage }: Props) => {
             metadata={metadata}
             image={image}
             onClickEditImage={onClickEditImage}
+            dataUrl={imgUrl}
           />
         </>
       )}
@@ -117,7 +118,8 @@ function Controls({
   image,
   onClickEditImage,
   metadata,
-}: Props & { metadata: Metadata }) {
+  dataUrl,
+}: Props & { metadata: Metadata; dataUrl: string }) {
   const size = getSizeString(metadata.size);
   const dims = metadata.width + " x " + metadata.height;
   return (
@@ -126,7 +128,7 @@ function Controls({
         "absolute top-0 left-0 right-0 bottom-0 w-full h-full",
         // "z-50",
         // "bg-linear-to-t from-neutral-950/90 from-0% to-neutral-950/60 to-40%",
-        "bg-linear-to-t from-neutral-900/90 from-10% via-neutral-800/80 via-50% to-neutral-800/30 to-80%",
+        "bg-linear-to-t from-neutral-900/90 from-10% via-neutral-800/80 via-30% to-neutral-800/30 to-70%",
         // "border-2 border-neutral-800"
         "flex items-end"
       )}
@@ -143,7 +145,11 @@ function Controls({
           </div>
 
           <div className="absolute bottom-1 right-1 cursor-pointer">
-            <Button size="icon" className="cursor-pointer hover:bg-neutral-800">
+            <Button
+              onClick={() => onClickEditImage(image, metadata, dataUrl)}
+              size="icon"
+              className="cursor-pointer hover:bg-neutral-800"
+            >
               <Settings />
             </Button>
           </div>
