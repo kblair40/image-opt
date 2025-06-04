@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import clsx from "clsx";
 
 import type { Metadata } from "@/lib/image-types";
 import { useImagesContext } from "@/hooks/useImagesContext";
-import ImageListImage from "./ImageListImage";
+import ImageListImage2 from "./ImageListImage2";
 // import ImageListImage, { type Metadata } from "./ImageListImage";
 import ImageEditDrawer from "../ImageEditDrawer/ImageEditDrawer";
 
@@ -22,15 +23,23 @@ const ImageList2 = (props: Props) => {
   };
 
   return (
-    <div className="w-full border-collapse">
+    <div
+      className={clsx(
+        "w-full grid",
+        "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
+        "gap-x-8 gap-y-6",
+        "justify-center",
+        // "responsive-border"
+      )}
+    >
       {acceptedImages.map((img, i) => {
         return (
           // <div key={i} className="border-t border-neutral-500 py-1 px-2">
           <div
             key={i}
-            className="border-b first:border-y border-neutral-500 py-1 px-2"
+            // className="border-b first:border-y border-neutral-500 py-1 px-2"
           >
-            <ImageListImage
+            <ImageListImage2
               onClickEditImage={handleClickEditImage}
               image={img}
             />
