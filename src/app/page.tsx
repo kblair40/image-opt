@@ -1,7 +1,8 @@
 import clsx from "clsx";
 
 import ImageDropzone from "@/components/ImageDropzone/ImageDropzone";
-import ImageList from "@/components/ImageList/ImageList";
+// import ImageList from "@/components/ImageList/ImageList";
+import ImageList2 from "@/components/ImageList/ImageList2";
 
 function Home() {
   return (
@@ -21,7 +22,8 @@ function Home() {
       </section>
 
       <section>
-        <ImageList />
+        <ImageList2 />
+        {/* <ImageList /> */}
       </section>
     </div>
   );
