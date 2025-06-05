@@ -20,11 +20,14 @@ import type {
   AllowedImageFormat,
   Dimensions,
   CroppedImage,
+  // SerializedMetadata,
+  Metadata,
 } from "@/lib/image-types";
 // import { resizeImage } from "@/actions/resizeImage";
 import { cropImage } from "@/actions/cropImage";
 import { useDebounceFn } from "@/hooks/useDebounceFn";
-import { getCroppedImg } from "@/lib/client-image-utils";
+import { getCroppedImg, deserializeMetadata } from "@/lib/client-image-utils";
+import { getImageMetadata } from "@/actions/getImageMetadata";
 
 type Props = {
   data: EditData;
@@ -60,7 +63,8 @@ function centerAspectCrop(
 const ImageCropper = ({ data }: Props) => {
   const [crop, setCrop] = useState<Crop>();
   const [pctCrop, setPctCrop] = useState<PercentCrop>();
-  const [croppedImage, setCroppedImage] = React.useState<CroppedImage>();
+  const [croppedImage, setCroppedImage] = useState<CroppedImage>();
+  const [croppedImageMetadata, setCroppedImageMetadata] = useState<Metadata>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspect, setAspect] = useState<number | undefined>(
     data.width / data.height
@@ -74,8 +78,19 @@ const ImageCropper = ({ data }: Props) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const { run: debounce } = useDebounceFn();
 
-  
-  const initalSize = getSizeString(data.size)
+  const initialData = {
+    size: getSizeString(data.size),
+    width: data.width,
+    height: data.height,
+  };
+  const croppedData = !croppedImageMetadata
+    ? null
+    : {
+        size: croppedImageMetadata.size,
+        width: croppedImageMetadata.width,
+        height: croppedImageMetadata.height,
+      };
+
   const fmt = data.format as AllowedImageFormat;
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
@@ -85,7 +100,7 @@ const ImageCropper = ({ data }: Props) => {
     }
   }
 
-  function handleResizeImage(dims: Dimensions) {
+  async function handleResizeImage(dims: Dimensions) {
     console.group("RESIZING");
     setResizing(true);
 
@@ -96,6 +111,11 @@ const ImageCropper = ({ data }: Props) => {
         crop: { x: 0, y: 0, width, height, unit: "px" },
         fmt,
       });
+
+      const md = await getImageMetadata(croppedImage.dataUrl);
+      if (md) {
+        setCroppedImageMetadata(deserializeMetadata(md));
+      }
 
       setCroppedImage(croppedImage);
     } catch (e) {
@@ -129,28 +149,39 @@ const ImageCropper = ({ data }: Props) => {
     setPctCrop(pctCrop);
     setCrop(pxCrop);
 
-    debounce(() => {
+    debounce(async () => {
       if (imgRef.current) {
         const croppedImage = getCroppedImg({
           image: imgRef.current!,
           crop: pxCrop,
           fmt,
         });
+
+        const md = await getImageMetadata(croppedImage.dataUrl);
+        if (md) {
+          setCroppedImageMetadata(deserializeMetadata(md));
+        }
         setCroppedImage(croppedImage);
       }
     });
   }
 
-  function handleCropComplete(pxCrop: PixelCrop) {
+  async function handleCropComplete(pxCrop: PixelCrop) {
     console.log("\nCROP Complete:", { pxCrop });
 
     if (!pctCrop) return;
+
     const croppedImage = getCroppedImg({
       image: imgRef.current!,
       crop: pxCrop,
       fmt,
     });
     console.log("\nCropped Image:", croppedImage);
+
+    const md = await getImageMetadata(croppedImage.dataUrl);
+    if (md) {
+      setCroppedImageMetadata(deserializeMetadata(md));
+    }
 
     setCompletedCrop(pxCrop);
     setCrop(pxCrop);
@@ -162,9 +193,9 @@ const ImageCropper = ({ data }: Props) => {
 
   return (
     <div className="px-4 w-full h-dvh max-h-dvh flex flex-col">
-      <section className="pt-3 pb-2 pr-8 flex justify-between">
+      <section className="pt-3 pb-2 pr-10 flex justify-between">
         <div className="flex gap-x-4">
-        {/* <Button
+          {/* <Button
           onClick={handleClickCrop}
           variant="outline"
           className={cn("p-1")}
@@ -172,52 +203,68 @@ const ImageCropper = ({ data }: Props) => {
           <CropIcon className="size-5" />
         </Button> */}
 
-        <div className="flex gap-x-2">
-          <Label>Quality</Label>
-          <Input
-            type="number"
-            value={quality}
-            onChange={(e) => {
-              setQuality(parseFloat(e.target.value));
-            }}
-            min={1}
-            max={100}
-          />
+          <div className="flex gap-x-2">
+            <Label>Quality</Label>
+            <Input
+              type="number"
+              value={quality}
+              onChange={(e) => {
+                setQuality(parseFloat(e.target.value));
+              }}
+              min={1}
+              max={100}
+            />
+          </div>
+
+          <div className="flex gap-x-2">
+            <Label>Width</Label>
+            <Input
+              type="number"
+              value={width}
+              onChange={(e) => {
+                handleChangeDimensions("width", e.target.value);
+              }}
+              min={0}
+              max={data.width}
+            />
+          </div>
+
+          <div className="flex gap-x-2">
+            <Label>Height</Label>
+            <Input
+              type="number"
+              value={height}
+              onChange={(e) => {
+                handleChangeDimensions("height", e.target.value);
+              }}
+              min={0}
+              max={data.height}
+            />
+          </div>
+
+          <Button onClick={() => setShowPreview((cur) => !cur)}>
+            Show {showPreview ? "Original" : "Preview"}
+          </Button>
         </div>
 
-        <div className="flex gap-x-2">
-          <Label>Width</Label>
-          <Input
-            type="number"
-            value={width}
-            onChange={(e) => {
-              handleChangeDimensions("width", e.target.value);
-            }}
-            min={0}
-            max={data.width}
-          />
-        </div>
+        <div>
+          <section className="text-sm flex flex-col md:flex-row md:gap-x-3">
+            <p>
+              {initialData.width} x {initialData.height}
+            </p>
+            <p>{initialData.size}</p>
+          </section>
 
-        <div className="flex gap-x-2">
-          <Label>Height</Label>
-          <Input
-            type="number"
-            value={height}
-            onChange={(e) => {
-              handleChangeDimensions("height", e.target.value);
-            }}
-            min={0}
-            max={data.height}
-          />
-        </div>
-
-        <Button onClick={() => setShowPreview((cur) => !cur)}>
-          Show {showPreview ? "Original" : "Preview"}
-        </Button>
-        </div>
-
-        <div className="text-sm">
-          <p>{initalSize}</p>
+          <section className="text-sm flex flex-col md:flex-row md:gap-x-3">
+            {croppedData && (
+              <>
+                <p>
+                  {croppedData.width} x {croppedData.height}
+                </p>
+                <p>{getSizeString(croppedData.size)}</p>
+              </>
+            )}
+          </section>
         </div>
       </section>
 
@@ -261,6 +308,8 @@ const ImageCropper = ({ data }: Props) => {
             onLoad={onImageLoad}
             // style={{ maxHeight: "100%" }}
             style={{ maxWidth: "100%" }}
+            // width={width}
+            // height={height}
             width={croppedImage.metadata.width}
             height={croppedImage.metadata.height}
             //   className="object-cover"

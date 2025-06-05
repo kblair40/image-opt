@@ -1,21 +1,36 @@
 "use server";
 
 import sharp from "sharp";
-import type { OutputInfo } from "sharp";
+import type { OutputInfo, ResizeOptions } from "sharp";
 import type { PercentCrop } from "react-image-crop";
 
-import type { OptimizedMetadata } from "@/lib/image-types";
+import { resizeImage } from "@/lib/server-image-utils";
+
+import type { OptimizedMetadata, AnyOutputOptions } from "@/lib/image-types";
 
 export async function cropImage(
   dataUrl: string,
-  crop: PercentCrop
+  crop: PercentCrop,
+  options: {
+    output?: AnyOutputOptions;
+    resize?: ResizeOptions;
+  } = {}
 ): Promise<OptimizedMetadata | null> {
   try {
     const buf = Buffer.from(dataUrl.split(",")[1], "base64");
 
-    const img = sharp(buf);
-    const metadata = await img.metadata();
+    let img = sharp(buf);
+    if (options.resize) {
+      img = resizeImage(img, options.resize);
+    }
+
+    let metadata = await img.metadata();
     console.log("metadata:", metadata);
+
+    const { format } = metadata;
+    img = img.toFormat(format, options.output);
+
+    metadata = await img.metadata();
 
     const left = Math.floor((crop.x / 100) * metadata.width);
     const top = Math.floor((crop.y / 100) * metadata.height);
