@@ -112,6 +112,7 @@ const ImageCropper = ({ data }: Props) => {
         fmt,
       });
 
+      // TODO: GET METADATA FROM cropImage METHOD INSTEAD
       const md = await getImageMetadata(croppedImage.dataUrl);
       if (md) {
         setCroppedImageMetadata(deserializeMetadata(md));
@@ -157,6 +158,7 @@ const ImageCropper = ({ data }: Props) => {
           fmt,
         });
 
+        // TODO: GET METADATA FROM cropImage METHOD INSTEAD
         const md = await getImageMetadata(croppedImage.dataUrl);
         if (md) {
           setCroppedImageMetadata(deserializeMetadata(md));
@@ -178,6 +180,7 @@ const ImageCropper = ({ data }: Props) => {
     });
     console.log("\nCropped Image:", croppedImage);
 
+    // TODO: GET METADATA FROM cropImage METHOD INSTEAD
     const md = await getImageMetadata(croppedImage.dataUrl);
     if (md) {
       setCroppedImageMetadata(deserializeMetadata(md));
