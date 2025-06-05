@@ -74,6 +74,8 @@ const ImageCropper = ({ data }: Props) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const { run: debounce } = useDebounceFn();
 
+  
+  const initalSize = getSizeString(data.size)
   const fmt = data.format as AllowedImageFormat;
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
@@ -160,7 +162,7 @@ const ImageCropper = ({ data }: Props) => {
 
   return (
     <div className="px-4 w-full h-dvh max-h-dvh flex flex-col">
-      <section className="pt-3 pb-2 flex justify-between">
+      <section className="pt-3 pb-2 pr-8 flex justify-between">
         <div className="flex gap-x-4">
         {/* <Button
           onClick={handleClickCrop}
@@ -214,7 +216,9 @@ const ImageCropper = ({ data }: Props) => {
         </Button>
         </div>
 
-        <div>Metadata Here</div>
+        <div className="text-sm">
+          <p>{initalSize}</p>
+        </div>
       </section>
 
       {/* <section className="grow max-h-full overflow-y-auto centered z-50"> */}
