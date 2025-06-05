@@ -76,14 +76,6 @@ const ImageCropper = ({ data }: Props) => {
 
   const fmt = data.format as AllowedImageFormat;
 
-  //   if (!data.format) {
-  //     return (
-  //       <div className="h-40 centered text-red-600">
-  //         <p>Image type must be provided</p>
-  //       </div>
-  //     );
-  //   }
-
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (aspect) {
       const { width, height } = e.currentTarget;
