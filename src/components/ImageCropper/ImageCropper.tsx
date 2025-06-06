@@ -13,6 +13,7 @@ import "react-image-crop/dist/ReactCrop.css";
 
 import type { EditData } from "@/components/ImageList/ImageList";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -92,6 +93,11 @@ const ImageCropper = ({ data }: Props) => {
       };
 
   const fmt = data.format as AllowedImageFormat;
+
+  function handleToggleAspectRatio(checked: boolean) {
+    if (checked) setAspect(data.width / data.height);
+    else setAspect(undefined);
+  }
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (aspect) {
@@ -181,24 +187,19 @@ const ImageCropper = ({ data }: Props) => {
     console.log("\nCropped Image:", croppedImage);
 
     // TODO: GET METADATA FROM cropImage METHOD INSTEAD
-    const _md = await cropImage(croppedImage.dataUrl, pctCrop, {
+    const img = await cropImage(croppedImage.dataUrl, pctCrop, {
       output: { quality },
       resize:
         width !== data.width || height !== data.height
           ? { width, height }
           : undefined,
     });
-    console.log("_MD:", _md);
-    const md = await getImageMetadata(croppedImage.dataUrl);
-    console.log("MD:", md);
-    if (_md) {
-      setCroppedImageMetadata(deserializeMetadata(_md.metadata));
-      setWidth(_md.metadata.width);
-      setHeight(_md.metadata.height);
+    console.log("img.md:", img);
+    if (img) {
+      setCroppedImageMetadata(deserializeMetadata(img.metadata));
+      setWidth(img.metadata.width);
+      setHeight(img.metadata.height);
     }
-    // if (md) {
-    //   setCroppedImageMetadata(deserializeMetadata(md));
-    // }
 
     setCompletedCrop(pxCrop);
     setCrop(pxCrop);
@@ -259,7 +260,15 @@ const ImageCropper = ({ data }: Props) => {
             />
           </div>
 
-          <Button onClick={() => setShowPreview((cur) => !cur)}>
+          <div className="flex items-center gap-x-2">
+            <Label>Force Aspect?</Label>
+            <Checkbox
+              checked={!!aspect}
+              onCheckedChange={(v) => handleToggleAspectRatio(!!v)}
+            />
+          </div>
+
+          <Button className="ml-4" onClick={() => setShowPreview((cur) => !cur)}>
             Show {showPreview ? "Original" : "Preview"}
           </Button>
         </div>
