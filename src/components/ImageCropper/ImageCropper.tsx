@@ -24,7 +24,7 @@ import type {
   // SerializedMetadata,
   Metadata,
 } from "@/lib/image-types";
-// import { resizeImage } from "@/actions/resizeImage";
+import { resizeImage } from "@/actions/resizeImage";
 import { cropImage } from "@/actions/cropImage";
 import { useDebounceFn } from "@/hooks/useDebounceFn";
 import { getCroppedImg, deserializeMetadata } from "@/lib/client-image-utils";
@@ -94,6 +94,12 @@ const ImageCropper = ({ data }: Props) => {
 
   const fmt = data.format as AllowedImageFormat;
 
+  // 1536 x 2048
+  // How much should width be multiplied by to get height
+  const hMult = data.height / data.width;
+  // How much should height be multiplied by to get width
+  const wMult = data.width / data.height;
+
   function handleToggleAspectRatio(checked: boolean) {
     if (checked) setAspect(data.width / data.height);
     else setAspect(undefined);
@@ -119,9 +125,24 @@ const ImageCropper = ({ data }: Props) => {
       });
 
       // TODO: GET METADATA FROM cropImage METHOD INSTEAD
-      const md = await getImageMetadata(croppedImage.dataUrl);
-      if (md) {
-        setCroppedImageMetadata(deserializeMetadata(md));
+      // const md = await getImageMetadata(croppedImage.dataUrl);
+      // if (md) {
+      //   setCroppedImageMetadata(deserializeMetadata(md));
+      // }
+
+      const img = null;
+      // const img = await cropImage(croppedImage.dataUrl, pctCrop, {
+      //   output: { quality },
+      //   resize:
+      //     width !== data.width || height !== data.height
+      //       ? { width, height }
+      //       : undefined,
+      // });
+      // console.log("img.md:", img);
+      if (img) {
+        // setCroppedImageMetadata(deserializeMetadata(img.metadata));
+        setWidth(dims.width);
+        setHeight(dims.height);
       }
 
       setCroppedImage(croppedImage);
@@ -165,10 +186,25 @@ const ImageCropper = ({ data }: Props) => {
         });
 
         // TODO: GET METADATA FROM cropImage METHOD INSTEAD
-        const md = await getImageMetadata(croppedImage.dataUrl);
-        if (md) {
-          setCroppedImageMetadata(deserializeMetadata(md));
+        // const md = await getImageMetadata(croppedImage.dataUrl);
+        // if (md) {
+        //   setCroppedImageMetadata(deserializeMetadata(md));
+        // }
+
+        const img = await cropImage(croppedImage.dataUrl, pctCrop, {
+          output: { quality },
+          resize:
+            width !== data.width || height !== data.height
+              ? { width, height }
+              : undefined,
+        });
+        console.log("img.md:", img);
+        if (img) {
+          setCroppedImageMetadata(deserializeMetadata(img.metadata));
+          setWidth(img.metadata.width);
+          setHeight(img.metadata.height);
         }
+
         setCroppedImage(croppedImage);
       }
     });
@@ -268,7 +304,10 @@ const ImageCropper = ({ data }: Props) => {
             />
           </div>
 
-          <Button className="ml-4" onClick={() => setShowPreview((cur) => !cur)}>
+          <Button
+            className="ml-4"
+            onClick={() => setShowPreview((cur) => !cur)}
+          >
             Show {showPreview ? "Original" : "Preview"}
           </Button>
         </div>
