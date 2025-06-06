@@ -188,12 +188,17 @@ const ImageCropper = ({ data }: Props) => {
           ? { width, height }
           : undefined,
     });
-    console.log('_MD:', _md)
+    console.log("_MD:", _md);
     const md = await getImageMetadata(croppedImage.dataUrl);
-    console.log("MD:", md)
-    if (md) {
-      setCroppedImageMetadata(deserializeMetadata(md));
+    console.log("MD:", md);
+    if (_md) {
+      setCroppedImageMetadata(deserializeMetadata(_md.metadata));
+      setWidth(_md.metadata.width);
+      setHeight(_md.metadata.height);
     }
+    // if (md) {
+    //   setCroppedImageMetadata(deserializeMetadata(md));
+    // }
 
     setCompletedCrop(pxCrop);
     setCrop(pxCrop);

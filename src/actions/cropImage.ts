@@ -16,6 +16,7 @@ export async function cropImage(
     resize?: ResizeOptions;
   } = {}
 ): Promise<OptimizedMetadata | null> {
+  console.log("\nCrop Image Options:", options);
   try {
     const buf = Buffer.from(dataUrl.split(",")[1], "base64");
 
@@ -24,13 +25,9 @@ export async function cropImage(
       img = resizeImage(img, options.resize);
     }
 
-    let metadata = await img.metadata();
-    console.log("metadata:", metadata);
-
-    const { format } = metadata;
-    img = img.toFormat(format, options.output);
-
-    metadata = await img.metadata();
+    const metadata = await img.metadata();
+    const size = metadata.size || 1 / 1000 / 1000;
+    console.log("initial metadata:", metadata, { size });
 
     const left = Math.floor((crop.x / 100) * metadata.width);
     const top = Math.floor((crop.y / 100) * metadata.height);
@@ -38,12 +35,14 @@ export async function cropImage(
     const height = Math.floor((crop.height / 100) * metadata.height);
 
     console.log("\nCROP CONFIG:", { left, top, width, height }, "\n");
-    const croppedImg = img.extract({
-      left,
-      top,
-      width,
-      height,
-    });
+    const croppedImg = img
+      .extract({
+        left,
+        top,
+        width,
+        height,
+      })
+      .toFormat(metadata.format, options.output);
 
     const bufOut = await croppedImg.toBuffer();
 
@@ -63,7 +62,8 @@ export async function cropImage(
         }
       }
     );
-    console.log("\nOutput Info/Metadata Out:", { outputInfo, mdOut }, "\n");
+    const sizeOut = ((mdOut.size || 0) / 1000 / 1000).toFixed(2);
+    console.log("\noutputInfo/mdOut:", { outputInfo, mdOut, sizeOut }, "\n");
 
     return { dataUrl: b64Url, metadata: serializeMetadata(mdOut), outputInfo };
   } catch (e) {
