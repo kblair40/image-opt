@@ -113,7 +113,7 @@ const ImageCropper = ({ data }: Props) => {
   }
 
   async function handleResizeImage(dims: Dimensions) {
-    console.group("RESIZING");
+    console.group("RESIZING:", dims);
     setResizing(true);
 
     try {
@@ -122,6 +122,7 @@ const ImageCropper = ({ data }: Props) => {
         image: imgRef.current!,
         crop: { x: 0, y: 0, width, height, unit: "px" },
         fmt,
+        useExact: true,
       });
 
       // TODO: GET METADATA FROM cropImage METHOD INSTEAD
@@ -130,7 +131,9 @@ const ImageCropper = ({ data }: Props) => {
       //   setCroppedImageMetadata(deserializeMetadata(md));
       // }
 
-      const img = null;
+      // const img = null;
+      const img = await resizeImage(data.dataUrl, dims);
+      console.log("Resized Image:", img);
       // const img = await cropImage(croppedImage.dataUrl, pctCrop, {
       //   output: { quality },
       //   resize:
@@ -140,10 +143,12 @@ const ImageCropper = ({ data }: Props) => {
       // });
       // console.log("img.md:", img);
       if (img) {
-        // setCroppedImageMetadata(deserializeMetadata(img.metadata));
+        setCroppedImageMetadata(deserializeMetadata(img.metadata));
         setWidth(dims.width);
         setHeight(dims.height);
       }
+
+      console.log({ croppedImage });
 
       setCroppedImage(croppedImage);
     } catch (e) {
@@ -162,10 +167,22 @@ const ImageCropper = ({ data }: Props) => {
       const h = Math.min(data.height, numericValue);
       setHeight(h);
       dims.height = h;
+
+      if (!!aspect) {
+        const w = Math.floor(h * wMult);
+        setWidth(w);
+        dims.width = w;
+      }
     } else {
       const w = Math.min(data.width, numericValue);
       setWidth(w);
       dims.width = w;
+
+      if (!!aspect) {
+        const h = Math.floor(w * hMult);
+        dims.height = h;
+        setHeight(h);
+      }
     }
 
     debounce(() => handleResizeImage(dims));

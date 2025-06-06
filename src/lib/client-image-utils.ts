@@ -30,16 +30,24 @@ type GetCroppedImg = {
   image: HTMLImageElement;
   crop: PixelCrop;
   fmt: AllowedImageFormat;
+  useExact?: boolean;
 };
-export function getCroppedImg({ image, crop, fmt }: GetCroppedImg) {
+export function getCroppedImg({
+  image,
+  crop,
+  fmt,
+  useExact = false,
+}: GetCroppedImg) {
   //   ): { dataUrl: string; metadata: Metadata } {
   const canvas = document.createElement("canvas");
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
   console.log("Scale:", { scaleX, scaleY });
 
-  const w = crop.width * scaleX;
-  const h = crop.height * scaleY;
+  const w = useExact ? crop.width : crop.width * scaleX;
+  const h = useExact ? crop.height : crop.height * scaleY;
+  // const w = crop.width * scaleX;
+  // const h = crop.height * scaleY;
   canvas.width = w;
   canvas.height = h;
 
