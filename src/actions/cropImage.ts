@@ -26,9 +26,10 @@ export async function cropImage(
     }
 
     const metadata = await img.metadata();
-    const size = metadata.size || 1 / 1000 / 1000;
+    const size = (metadata.size || 1 / 1000 / 1000).toFixed(1);
     console.log("initial metadata:", metadata, { size });
 
+    console.log('crop:', crop)
     const left = Math.floor((crop.x / 100) * metadata.width);
     const top = Math.floor((crop.y / 100) * metadata.height);
     const width = Math.floor((crop.width / 100) * metadata.width);
