@@ -9,7 +9,7 @@ import type {
   AllowedImageFormat,
   OptimizedMetadata,
 } from "@/lib/image-types";
-import { resizeImage } from "@/lib/server-image-utils";
+import { resizeImage, serializeMetadata } from "@/lib/server-image-utils";
 
 const DEFAULT_OUTPUT_OPTIONS: OutputOptions = {
   jpeg: {},
@@ -62,7 +62,7 @@ export async function compressImage(
     console.log("\noutputInfo:", outputInfo);
 
     console.log("\n");
-    return { dataUrl: b64Url, metadata: mdOut, outputInfo };
+    return { dataUrl: b64Url, metadata: serializeMetadata(mdOut), outputInfo };
   } catch (e) {
     console.log("\nError extracting image metadata:", e, "\n");
     return null;

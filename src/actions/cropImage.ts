@@ -4,7 +4,7 @@ import sharp from "sharp";
 import type { OutputInfo, ResizeOptions } from "sharp";
 import type { PercentCrop } from "react-image-crop";
 
-import { resizeImage } from "@/lib/server-image-utils";
+import { resizeImage, serializeMetadata } from "@/lib/server-image-utils";
 
 import type { OptimizedMetadata, AnyOutputOptions } from "@/lib/image-types";
 
@@ -65,7 +65,7 @@ export async function cropImage(
     );
     console.log("\nOutput Info/Metadata Out:", { outputInfo, mdOut }, "\n");
 
-    return { dataUrl: b64Url, metadata: mdOut, outputInfo };
+    return { dataUrl: b64Url, metadata: serializeMetadata(mdOut), outputInfo };
   } catch (e) {
     console.log("\nError extracting image metadata:", e, "\n");
     return null;

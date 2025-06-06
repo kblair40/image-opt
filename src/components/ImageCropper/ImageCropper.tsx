@@ -168,8 +168,8 @@ const ImageCropper = ({ data }: Props) => {
     });
   }
 
-  async function handleCropComplete(pxCrop: PixelCrop) {
-    console.log("\nCROP Complete:", { pxCrop });
+  async function handleCropComplete(pxCrop: PixelCrop, pctCrop: PercentCrop) {
+    console.log("\nCROP Complete:", { pxCrop, pctCrop });
 
     if (!pctCrop) return;
 
@@ -181,7 +181,16 @@ const ImageCropper = ({ data }: Props) => {
     console.log("\nCropped Image:", croppedImage);
 
     // TODO: GET METADATA FROM cropImage METHOD INSTEAD
+    const _md = await cropImage(croppedImage.dataUrl, pctCrop, {
+      output: { quality },
+      resize:
+        width !== data.width || height !== data.height
+          ? { width, height }
+          : undefined,
+    });
+    console.log('_MD:', _md)
     const md = await getImageMetadata(croppedImage.dataUrl);
+    console.log("MD:", md)
     if (md) {
       setCroppedImageMetadata(deserializeMetadata(md));
     }

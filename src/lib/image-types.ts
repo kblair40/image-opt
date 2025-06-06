@@ -37,7 +37,9 @@ export interface OutputOptions {
 export type Dimensions = Required<Pick<ResizeOptions, "width" | "height">>;
 
 export type OptimizedMetadata = {
-  metadata: Metadata;
+  metadata: SerializedMetadata;
+  // metadata: Metadata | SerializedMetadata;
+  // metadata: Metadata;
   outputInfo: OutputInfo;
   dataUrl: string;
 };
