@@ -9,7 +9,8 @@ import ReactCrop, {
   //   convertToPixelCrop,
 } from "react-image-crop";
 import type { Crop, PixelCrop, PercentCrop } from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
+// import "react-image-crop/dist/ReactCrop.css";
+import "@/app/image-cropper.css";
 
 import type { EditData } from "@/components/ImageList/ImageList";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ import { cropImage } from "@/actions/cropImage";
 import { useDebounceFn } from "@/hooks/useDebounceFn";
 import { getCroppedImg, deserializeMetadata } from "@/lib/client-image-utils";
 import { getImageMetadata } from "@/actions/getImageMetadata";
+import { AspectRatio } from "../ui/aspect-ratio";
 
 type Props = {
   data: EditData;
@@ -77,6 +79,8 @@ const ImageCropper = ({ data }: Props) => {
   const [showPreview, setShowPreview] = useState(false);
 
   const imgRef = useRef<HTMLImageElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+
   const { run: debounce } = useDebounceFn();
 
   const initialData = {
@@ -194,64 +198,80 @@ const ImageCropper = ({ data }: Props) => {
     setPctCrop(pctCrop);
     setCrop(pxCrop);
 
-    debounce(async () => {
-      if (imgRef.current) {
-        const croppedImage = getCroppedImg({
-          image: imgRef.current!,
-          crop: pxCrop,
-          fmt,
-        });
+    // debounce(async () => {
+    //   if (imgRef.current) {
+    //     const croppedImage = getCroppedImg({
+    //       image: imgRef.current!,
+    //       crop: pxCrop,
+    //       fmt,
+    //     });
 
-        // TODO: GET METADATA FROM cropImage METHOD INSTEAD
-        // const md = await getImageMetadata(croppedImage.dataUrl);
-        // if (md) {
-        //   setCroppedImageMetadata(deserializeMetadata(md));
-        // }
+    //     // TODO: GET METADATA FROM cropImage METHOD INSTEAD
+    //     // const md = await getImageMetadata(croppedImage.dataUrl);
+    //     // if (md) {
+    //     //   setCroppedImageMetadata(deserializeMetadata(md));
+    //     // }
 
-        const img = await cropImage(croppedImage.dataUrl, pctCrop, {
-          output: { quality },
-        });
-        console.log("img.md:", img);
-        if (img) {
-          setCroppedImageMetadata(deserializeMetadata(img.metadata));
-          setWidth(img.metadata.width);
-          setHeight(img.metadata.height);
-        }
+    //     const img = await cropImage(croppedImage.dataUrl, pctCrop, {
+    //       output: { quality },
+    //     });
+    //     console.log("img.md:", img);
+    //     if (img) {
+    //       setCroppedImageMetadata(deserializeMetadata(img.metadata));
+    //       setWidth(img.metadata.width);
+    //       setHeight(img.metadata.height);
+    //     }
 
-        setCroppedImage(croppedImage);
-      }
-    });
+    //     setCroppedImage(croppedImage);
+    //   }
+    // });
   }
 
   async function handleCropComplete(pxCrop: PixelCrop, pctCrop: PercentCrop) {
     console.log("\nCROP Complete:", { pxCrop, pctCrop });
 
-    if (!pctCrop) return;
-
-    const croppedImage = getCroppedImg({
-      image: imgRef.current!,
-      crop: pxCrop,
-      fmt,
-    });
-    console.log("\nCropped Image:", croppedImage);
-
-    // TODO: GET METADATA FROM cropImage METHOD INSTEAD
-    const img = await cropImage(croppedImage.dataUrl, pctCrop, {
-      output: { quality },
-    });
-    console.log("img.md:", img);
-    if (img) {
-      setCroppedImageMetadata(deserializeMetadata(img.metadata));
-      setWidth(img.metadata.width);
-      setHeight(img.metadata.height);
-    }
-
     setCompletedCrop(pxCrop);
-    setCrop(pxCrop);
 
-    if (croppedImage) {
-      setCroppedImage(croppedImage);
-    }
+    // if (!pctCrop) return;
+
+    // const croppedImage = getCroppedImg({
+    //   image: imgRef.current!,
+    //   crop: pxCrop,
+    //   fmt,
+    // });
+    // console.log("\nCropped Image:", croppedImage);
+
+    // // TODO: GET METADATA FROM cropImage METHOD INSTEAD
+    // // const img = await cropImage(croppedImage.dataUrl, pctCrop, {
+    // // const img = await cropImage(croppedImage.dataUrl, pxCrop, {
+    // const img = await cropImage(data.dataUrl, pctCrop, {
+    //   output: { quality },
+    // });
+    // console.log("img.md:", img);
+    // if (img) {
+    //   setCroppedImageMetadata(deserializeMetadata(img.metadata));
+    //   setWidth(img.metadata.width);
+    //   setHeight(img.metadata.height);
+
+    //   setCroppedImage({
+    //     dataUrl: img.dataUrl,
+
+    //     metadata: {
+    //       width: img.metadata.width,
+    //       height: img.metadata.height,
+    //       // @ts-ignore
+    //       format: img.metadata.format,
+    //     },
+    //   });
+    // }
+
+    // setCompletedCrop(pxCrop);
+    // setCrop(pctCrop);
+    // // setCrop(pxCrop);
+
+    // // if (croppedImage) {
+    // //   setCroppedImage(croppedImage);
+    // // }
   }
 
   return (
@@ -343,55 +363,58 @@ const ImageCropper = ({ data }: Props) => {
       </section>
 
       {/* <section className="grow max-h-full overflow-y-auto centered z-50"> */}
-      <section className="grow max-h-full overflow-auto centered z-50">
+      {/* <section className="grow max-h-full overflow-auto centered z-50"> */}
+      <section className="grow centered z-50">
+        {/* <div className="min-h-fit h-full"> */}
         {!showPreview ? (
+          // <div className="relative w-full h-full border-2 border-red-400">
           <ReactCrop
             crop={crop}
-            onChange={handleCropChange}
-            // onChange={(px, pct) => debounce(() => handleCropChange(px, pct))}
-            // onChange={(_, percentCrop) => setCrop(percentCrop)}
-            // onComplete={(c) => setCompletedCrop(c)}
-            // onComplete={(c) => {
-            //     console.log('Completed Crop:', c)
-            //     setCompletedCrop(c)
-            // }}
+            // onChange={handleCropChange}
+            // onChange={handleCropChange}
+            onChange={(_, percentCrop) => setCrop(percentCrop)}
             onComplete={handleCropComplete}
             // className="w-full h-full relative"
             aspect={aspect}
-            ruleOfThirds={true}
-            className="w-full h-full"
+            // ruleOfThirds={true}
+            // className="h-full"
+            // className="h-full w-full border border-blue-600 **:h-full"
+            // className="h-full w-full border border-blue-600"
+            // style={{ maxWidth: "90dvw" }}
+            // style={{ display: "flex", flexDirection: "column", height: "100%" }}
+            //
+            // style={{ height: `${data.height}px`, width: `${data.width}px` }}
           >
-            <Image
-              ref={imgRef}
-              alt="alt-placeholder"
+            <img
+              alt="alt-placholder"
               src={data.dataUrl}
               onLoad={onImageLoad}
-              // style={{ maxHeight: "100%" }}
-              style={{ maxWidth: "100%" }}
-              width={data.width}
-              height={data.height}
-              //   className="object-cover"
-              //   fill
+              // style={{ transform: `scale(${scale}) rotate(${rotate}deg)` }}
             />
+            {/* <Image
+                ref={imgRef}
+                alt="alt-placeholder"
+                src={data.dataUrl}
+                onLoad={onImageLoad}
+                width={data.width}
+                height={data.height}
+                className="object-contain"
+              /> */}
           </ReactCrop>
-        ) : // ) : croppedImageUrl && croppedImageMetadata ? (
-        croppedImage ? (
-          <Image
-            alt="alt-placeholder"
-            src={croppedImage.dataUrl}
-            onLoad={onImageLoad}
-            // style={{ maxHeight: "100%" }}
-            style={{ maxWidth: "100%" }}
-            // width={width}
-            // height={height}
-            width={croppedImage.metadata.width}
-            height={croppedImage.metadata.height}
-            //   className="object-cover"
-            //   fill
-            onError={(e) => {
-              console.log("\nError loading image:", e);
-            }}
-          />
+        ) : // </div>
+        // ) : croppedImageUrl && croppedImageMetadata ? (
+        croppedImage && completedCrop ? (
+          <div>
+            <canvas
+              ref={previewCanvasRef}
+              style={{
+                border: "1px solid black",
+                objectFit: "contain",
+                width: completedCrop.width,
+                height: completedCrop.height,
+              }}
+            />
+          </div>
         ) : //   <Image
         //     alt="alt-placeholder"
         //     src={croppedImageUrl}
@@ -407,10 +430,11 @@ const ImageCropper = ({ data }: Props) => {
         //     }}
         //   />
         null}
+        {/* </div> */}
       </section>
 
-      <section>
-        stuff footer
+      <section className="min-h-16 flex items-center">
+        footer
         {/*  */}
       </section>
     </div>

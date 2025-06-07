@@ -2,7 +2,7 @@
 
 import sharp from "sharp";
 import type { OutputInfo } from "sharp";
-import type { PercentCrop } from "react-image-crop";
+import type { PercentCrop, PixelCrop } from "react-image-crop";
 
 import { serializeMetadata } from "@/lib/server-image-utils";
 
@@ -10,7 +10,8 @@ import type { OptimizedMetadata, AnyOutputOptions } from "@/lib/image-types";
 
 export async function cropImage(
   dataUrl: string,
-  crop: PercentCrop,
+  crop: PercentCrop | PixelCrop,
+  // crop: PercentCrop,
   options: {
     output?: AnyOutputOptions;
   } = {}
@@ -25,11 +26,24 @@ export async function cropImage(
     const size = ((metadata.size || 1) / 1000 / 1000).toFixed(1);
     console.log("\nInitial metadata:", metadata, { size });
 
-    console.log("\nCrop:", crop);
-    const left = Math.floor((crop.x / 100) * metadata.width);
-    const top = Math.floor((crop.y / 100) * metadata.height);
-    const width = Math.floor((crop.width / 100) * metadata.width);
-    const height = Math.floor((crop.height / 100) * metadata.height);
+    let left: number;
+    let top: number;
+    let width: number;
+    let height: number;
+
+    if (crop.unit === "%") {
+      console.log("\n% Crop:", crop);
+      left = Math.floor((crop.x / 100) * metadata.width);
+      top = Math.floor((crop.y / 100) * metadata.height);
+      width = Math.floor((crop.width / 100) * metadata.width);
+      height = Math.floor((crop.height / 100) * metadata.height);
+    } else {
+      console.log("\nPX Crop:", crop);
+      left = Math.floor(crop.x);
+      top = Math.floor(crop.y);
+      width = Math.floor(crop.width);
+      height = Math.floor(crop.height);
+    }
 
     console.log("\nCROP CONFIG:", { left, top, width, height }, "\n");
     let croppedImg = img.extract({
@@ -73,7 +87,13 @@ export async function cropImage(
     const sizeOut = ((mdOut.size || 0) / 1000 / 1000).toFixed(2);
     console.log("\noutputInfo/mdOut:", { outputInfo, mdOut, sizeOut }, "\n");
 
-    return { dataUrl: b64Url, metadata: serializeMetadata(mdOut), outputInfo };
+    const urlPrefix = `data:image/${mdOut.format};base64,`;
+
+    return {
+      dataUrl: urlPrefix + b64Url,
+      metadata: serializeMetadata(mdOut),
+      outputInfo,
+    };
   } catch (e) {
     console.log("\nError extracting image metadata:", e, "\n");
     return null;
