@@ -1,4 +1,5 @@
 import type { PixelCrop } from "react-image-crop";
+import { centerCrop, makeAspectCrop } from "react-image-crop";
 
 import type {
   AllowedImageFormat,
@@ -82,6 +83,8 @@ export async function canvasPreview(
   rotate = 0
 ) {
   const ctx = canvas.getContext("2d");
+  console.group("Canvas Preview");
+  console.log({ ctx });
 
   if (!ctx) {
     throw new Error("No 2d context");
@@ -134,6 +137,8 @@ export async function canvasPreview(
   );
 
   ctx.restore();
+
+  console.groupEnd();
 }
 
 let previewUrl = "";
@@ -168,4 +173,31 @@ export async function imgPreview(
 
   previewUrl = URL.createObjectURL(blob);
   return previewUrl;
+}
+
+export function getSizeString(bytes?: number) {
+  if (!bytes) return "?kb";
+  const kb = bytes / 1000;
+
+  return kb >= 1000 ? (kb / 1000).toFixed(1) + "mb" : kb.toFixed(1) + " kb";
+}
+
+export function centerAspectCrop(
+  mediaWidth: number,
+  mediaHeight: number,
+  aspect: number
+) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: "%",
+        width: 90,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight
+    ),
+    mediaWidth,
+    mediaHeight
+  );
 }
