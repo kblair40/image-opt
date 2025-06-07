@@ -210,10 +210,6 @@ const ImageCropper = ({ data }: Props) => {
 
         const img = await cropImage(croppedImage.dataUrl, pctCrop, {
           output: { quality },
-          resize:
-            width !== data.width || height !== data.height
-              ? { width, height }
-              : undefined,
         });
         console.log("img.md:", img);
         if (img) {
@@ -242,10 +238,6 @@ const ImageCropper = ({ data }: Props) => {
     // TODO: GET METADATA FROM cropImage METHOD INSTEAD
     const img = await cropImage(croppedImage.dataUrl, pctCrop, {
       output: { quality },
-      resize:
-        width !== data.width || height !== data.height
-          ? { width, height }
-          : undefined,
     });
     console.log("img.md:", img);
     if (img) {

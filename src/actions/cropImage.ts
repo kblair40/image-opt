@@ -1,10 +1,10 @@
 "use server";
 
 import sharp from "sharp";
-import type { OutputInfo, ResizeOptions } from "sharp";
+import type { OutputInfo } from "sharp";
 import type { PercentCrop } from "react-image-crop";
 
-import { resizeImage, serializeMetadata } from "@/lib/server-image-utils";
+import { serializeMetadata } from "@/lib/server-image-utils";
 
 import type { OptimizedMetadata, AnyOutputOptions } from "@/lib/image-types";
 
@@ -13,37 +13,44 @@ export async function cropImage(
   crop: PercentCrop,
   options: {
     output?: AnyOutputOptions;
-    resize?: ResizeOptions;
   } = {}
 ): Promise<OptimizedMetadata | null> {
   console.log("\nCrop Image Options:", options);
   try {
     const buf = Buffer.from(dataUrl.split(",")[1], "base64");
 
-    let img = sharp(buf);
-    if (options.resize) {
-      img = resizeImage(img, options.resize);
-    }
+    const img = sharp(buf);
 
     const metadata = await img.metadata();
-    const size = (metadata.size || 1 / 1000 / 1000).toFixed(1);
-    console.log("initial metadata:", metadata, { size });
+    const size = ((metadata.size || 1) / 1000 / 1000).toFixed(1);
+    console.log("\nInitial metadata:", metadata, { size });
 
-    console.log('crop:', crop)
+    console.log("\nCrop:", crop);
     const left = Math.floor((crop.x / 100) * metadata.width);
     const top = Math.floor((crop.y / 100) * metadata.height);
     const width = Math.floor((crop.width / 100) * metadata.width);
     const height = Math.floor((crop.height / 100) * metadata.height);
 
     console.log("\nCROP CONFIG:", { left, top, width, height }, "\n");
-    const croppedImg = img
-      .extract({
-        left,
-        top,
-        width,
-        height,
-      })
-      .toFormat(metadata.format, options.output);
+    let croppedImg = img.extract({
+      left,
+      top,
+      width,
+      height,
+    });
+
+    croppedImg = croppedImg.toFormat(metadata.format, options.output);
+
+    console.log("\nCropped Image:", {
+      metadata: await croppedImg.metadata(),
+    });
+
+    try {
+      const bufOut = await croppedImg.toBuffer();
+      console.log("\nBuffer created\n");
+    } catch (e) {
+      console.log("\nErr creating buffer:", e, "\n");
+    }
 
     const bufOut = await croppedImg.toBuffer();
 
