@@ -63,6 +63,7 @@ const ImageCropper = ({ data }: Props) => {
   }
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
+    if (crop) return;
     if (aspect) {
       const { width, height } = e.currentTarget;
       setCrop(centerAspectCrop(width, height, aspect));
@@ -118,10 +119,7 @@ const ImageCropper = ({ data }: Props) => {
           </div>
 
           <div className="flex items-center gap-x-4">
-            <Button
-              // className="ml-4"
-              onClick={() => setShowPreview((cur) => !cur)}
-            >
+            <Button onClick={() => setShowPreview((cur) => !cur)}>
               {showPreview ? "Show Original" : <CropIcon />}
             </Button>
 
@@ -134,12 +132,10 @@ const ImageCropper = ({ data }: Props) => {
         </div>
       </section>
 
-      {/* <section className="grow max-h-full overflow-y-auto centered z-50"> */}
-      {/* <section className="grow max-h-full overflow-auto centered z-50"> */}
       <section className="grow overflow-auto centered z-50">
         {/* <div className="min-h-fit h-full"> */}
         {!showPreview && (
-          <div className="w-full h-full">
+          <div className="h-full">
             <ReactCrop
               crop={crop}
               onChange={(_, percentCrop) => setCrop(percentCrop)}
@@ -161,16 +157,18 @@ const ImageCropper = ({ data }: Props) => {
         )}
 
         {!!completedCrop && (
-          <canvas
-            ref={previewCanvasRef}
-            style={{
-              border: "1px solid black",
-              objectFit: "contain",
-              width: showPreview ? completedCrop.width : 0,
-              height: showPreview ? completedCrop.height : 0,
-              opacity: showPreview ? 1 : 0,
-            }}
-          />
+          <div className={showPreview ? "h-full centered" : ""}>
+            <canvas
+              ref={previewCanvasRef}
+              style={{
+                // border: "1px solid black",
+                objectFit: "contain",
+                width: showPreview ? completedCrop.width : 0,
+                height: showPreview ? completedCrop.height : 0,
+                opacity: showPreview ? 1 : 0,
+              }}
+            />
+          </div>
         )}
       </section>
 
