@@ -58,6 +58,10 @@ const ImageCropper = ({ data }: Props) => {
     }
   }
 
+  function handleClickSave() {
+    //
+  }
+
   useDebounceEffect(
     async () => {
       // console.log("DEBOUNCE EFFECT", {
@@ -117,8 +121,8 @@ const ImageCropper = ({ data }: Props) => {
             )}
 
             {showPreview && (
-              <Button>
-                <Save />
+              <Button onClick={handleClickSave}>
+                Save <Save />
               </Button>
             )}
           </div>
@@ -149,7 +153,7 @@ const ImageCropper = ({ data }: Props) => {
         )}
 
         {!!completedCrop && (
-          <div className={showPreview ? "h-full centered" : ""}>
+          <div className={showPreview ? "h-full" : ""}>
             <canvas
               ref={previewCanvasRef}
               style={{
