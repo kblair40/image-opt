@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-// import { Crop as CropIcon } from "lucide-react";
+import { Crop as CropIcon, Save, ChevronRight, ArrowRight } from "lucide-react";
 import ReactCrop from "react-image-crop";
 import type { Crop, PixelCrop, PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -38,7 +38,7 @@ const ImageCropper = ({ data }: Props) => {
   const [aspect, setAspect] = useState<number | undefined>(
     data.width / data.height
   );
-  const [quality, setQuality] = useState(90);
+  // const [quality, setQuality] = useState(90);
   const [showPreview, setShowPreview] = useState(false);
 
   const imgRef = useRef<HTMLImageElement>(null);
@@ -93,39 +93,23 @@ const ImageCropper = ({ data }: Props) => {
 
   return (
     <div className="px-4 w-full h-dvh max-h-dvh flex flex-col">
-      <section className="pt-3 pb-2 pr-10 flex justify-between">
+      <section className="pt-3 pb-2 pr-20 flex justify-between">
+        <div className="text-sm flex items-center flex-row gap-x-2">
+          <p>
+            {initialData.width} x {initialData.height}
+          </p>
+          {completedCrop && <ArrowRight size={20} className="" />}
+          <p>
+            {completedCrop
+              ? `${Math.round(completedCrop.width)} x ${Math.round(
+                  completedCrop.height
+                )}`
+              : ""}
+          </p>
+        </div>
+
         <div className="flex gap-x-4">
-          {/* <Button
-          onClick={handleClickCrop}
-          variant="outline"
-          className={cn("p-1")}
-        >
-          <CropIcon className="size-5" />
-        </Button> */}
-
-          <div className="flex gap-x-2">
-            <Label>Quality</Label>
-            <Input
-              type="number"
-              value={quality}
-              onChange={(e) => {
-                setQuality(parseFloat(e.target.value));
-              }}
-              min={1}
-              max={100}
-            />
-          </div>
-
-          {/* <div className="flex gap-x-2">
-            <Label>Width</Label>
-            <Input type="number" value={width} min={0} max={data.width} />
-          </div>
-          <div className="flex gap-x-2">
-            <Label>Height</Label>
-            <Input type="number" value={height} min={0} max={data.height} />
-          </div> */}
-
-          <div className="flex items-center gap-x-2">
+          <div className="flex items-center gap-x-2 mr-8">
             <Label>Force Aspect?</Label>
             <Checkbox
               checked={!!aspect}
@@ -133,32 +117,20 @@ const ImageCropper = ({ data }: Props) => {
             />
           </div>
 
-          <Button
-            className="ml-4"
-            onClick={() => setShowPreview((cur) => !cur)}
-          >
-            Show {showPreview ? "Original" : "Preview"}
-          </Button>
-        </div>
+          <div className="flex items-center gap-x-4">
+            <Button
+              // className="ml-4"
+              onClick={() => setShowPreview((cur) => !cur)}
+            >
+              {showPreview ? "Show Original" : <CropIcon />}
+            </Button>
 
-        <div>
-          <section className="text-sm flex flex-col md:flex-row md:gap-x-3">
-            <p>
-              {initialData.width} x {initialData.height}
-            </p>
-            <p>{initialData.size}</p>
-          </section>
-
-          <section className="text-sm flex flex-col md:flex-row md:gap-x-3">
-            {croppedData && (
-              <>
-                <p>
-                  {croppedData.width} x {croppedData.height}
-                </p>
-                <p>{getSizeString(croppedData.size)}</p>
-              </>
+            {showPreview && (
+              <Button>
+                <Save />
+              </Button>
             )}
-          </section>
+          </div>
         </div>
       </section>
 
