@@ -106,9 +106,15 @@ const ImageCropper = ({ data }: Props) => {
           </div>
 
           <div className="flex items-center gap-x-4">
-            <Button onClick={() => setShowPreview((cur) => !cur)}>
-              {showPreview ? "Show Original" : <CropIcon />}
-            </Button>
+            {showPreview ? (
+              <Button onClick={() => setShowPreview(false)}>
+                Show Original
+              </Button>
+            ) : (
+              <Button onClick={() => setShowPreview(true)}>
+                Crop <CropIcon />
+              </Button>
+            )}
 
             {showPreview && (
               <Button>
@@ -157,9 +163,7 @@ const ImageCropper = ({ data }: Props) => {
         )}
       </section>
 
-      <section className="min-h-16 flex items-center">
-        footer
-      </section>
+      <section className="min-h-16 flex items-center">footer</section>
     </div>
   );
 };
