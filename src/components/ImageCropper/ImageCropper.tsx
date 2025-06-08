@@ -29,16 +29,11 @@ type Props = {
 };
 
 const ImageCropper = ({ data }: Props) => {
-  // const [width, setWidth] = useState(data.width);
-  // const [height, setHeight] = useState(data.height);
   const [crop, setCrop] = useState<Crop>();
-  const [croppedImage, setCroppedImage] = useState<CroppedImage>();
-  const [croppedImageMetadata, setCroppedImageMetadata] = useState<Metadata>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspect, setAspect] = useState<number | undefined>(
     data.width / data.height
   );
-  // const [quality, setQuality] = useState(90);
   const [showPreview, setShowPreview] = useState(false);
 
   const imgRef = useRef<HTMLImageElement>(null);
@@ -49,13 +44,6 @@ const ImageCropper = ({ data }: Props) => {
     width: data.width,
     height: data.height,
   };
-  const croppedData = !croppedImageMetadata
-    ? null
-    : {
-        size: croppedImageMetadata.size,
-        width: croppedImageMetadata.width,
-        height: croppedImageMetadata.height,
-      };
 
   function handleToggleAspectRatio(checked: boolean) {
     if (checked) setAspect(data.width / data.height);
@@ -72,18 +60,17 @@ const ImageCropper = ({ data }: Props) => {
 
   useDebounceEffect(
     async () => {
-      console.log("DEBOUNCE EFFECT", {
-        completedCrop,
-        img: imgRef.current,
-        canvas: previewCanvasRef.current,
-      });
+      // console.log("DEBOUNCE EFFECT", {
+      //   completedCrop,
+      //   img: imgRef.current,
+      //   canvas: previewCanvasRef.current,
+      // });
       if (
         completedCrop?.width &&
         completedCrop?.height &&
         imgRef.current &&
         previewCanvasRef.current
       ) {
-        console.warn("CANVAS PREVIEW");
         // We use canvasPreview as it's much faster than imgPreview.
         canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop);
       }
@@ -133,7 +120,6 @@ const ImageCropper = ({ data }: Props) => {
       </section>
 
       <section className="grow overflow-auto centered z-50">
-        {/* <div className="min-h-fit h-full"> */}
         {!showPreview && (
           <div className="h-full">
             <ReactCrop
@@ -161,7 +147,6 @@ const ImageCropper = ({ data }: Props) => {
             <canvas
               ref={previewCanvasRef}
               style={{
-                // border: "1px solid black",
                 objectFit: "contain",
                 width: showPreview ? completedCrop.width : 0,
                 height: showPreview ? completedCrop.height : 0,
@@ -174,26 +159,9 @@ const ImageCropper = ({ data }: Props) => {
 
       <section className="min-h-16 flex items-center">
         footer
-        {/*  */}
       </section>
     </div>
   );
 };
 
 export default ImageCropper;
-
-// function handleToggleAspectClick() {
-//     if (aspect) {
-//       setAspect(undefined);
-//     } else {
-//       setAspect(16 / 9);
-
-//       if (imgRef.current) {
-//         const { width, height } = imgRef.current;
-//         const newCrop = centerAspectCrop(width, height, 16 / 9);
-//         setCrop(newCrop);
-//         // Updates the preview
-//         setCompletedCrop(convertToPixelCrop(newCrop, width, height));
-//       }
-//     }
-//   }
