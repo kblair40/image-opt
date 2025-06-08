@@ -145,3 +145,10 @@ body {
   grid-template-columns: 1fr;
   /* border: 6px solid green; */
 }
+
+::view-transition-old(*) {
+  animation: 500ms ease-out fade-out;
+}
+::view-transition-new(*) {
+  animation: 500ms ease-in fade-in;
+}

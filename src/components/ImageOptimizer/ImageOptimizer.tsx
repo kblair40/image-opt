@@ -24,6 +24,7 @@ import {
   canvasPreview,
 } from "@/lib/client-image-utils";
 import { useDebounceEffect } from "@/hooks/useDebounceEffect";
+import Optimizer from "./Optimizer";
 
 type Props = {
   data: EditData;
@@ -36,6 +37,7 @@ const ImageOptimizer = ({ data }: Props) => {
     data.width / data.height
   );
   const [showPreview, setShowPreview] = useState(false);
+  const [showOptimizer, setShowOptimizer] = useState(false);
 
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -60,7 +62,8 @@ const ImageOptimizer = ({ data }: Props) => {
   }
 
   function handleClickSave() {
-    //
+    // setShowOptimizer(true);
+    setShowOptimizer((cur) => !cur);
   }
 
   useDebounceEffect(
@@ -131,41 +134,45 @@ const ImageOptimizer = ({ data }: Props) => {
       </section>
 
       <section className="grow overflow-auto centered z-50">
-        {!showPreview && (
-          <div className="h-full">
-            <ReactCrop
-              crop={crop}
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
-              onComplete={(c) => setCompletedCrop(c)}
-              aspect={aspect}
-              ruleOfThirds={true}
-            >
-              <Image
-                ref={imgRef}
-                alt="alt-placeholder"
-                src={data.dataUrl}
-                onLoad={onImageLoad}
-                width={data.width}
-                height={data.height}
-                className="object-contain"
-              />
-            </ReactCrop>
-          </div>
-        )}
+        <ViewTransition>
+          {!showPreview && !showOptimizer && (
+            <div className="h-full">
+              <ReactCrop
+                crop={crop}
+                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                onComplete={(c) => setCompletedCrop(c)}
+                aspect={aspect}
+                ruleOfThirds={true}
+              >
+                <Image
+                  ref={imgRef}
+                  alt="alt-placeholder"
+                  src={data.dataUrl}
+                  onLoad={onImageLoad}
+                  width={data.width}
+                  height={data.height}
+                  className="object-contain"
+                />
+              </ReactCrop>
+            </div>
+          )}
 
-        {!!completedCrop && (
-          <div className={showPreview ? "h-full" : ""}>
-            <canvas
-              ref={previewCanvasRef}
-              style={{
-                objectFit: "contain",
-                width: showPreview ? completedCrop.width : 0,
-                height: showPreview ? completedCrop.height : 0,
-                opacity: showPreview ? 1 : 0,
-              }}
-            />
-          </div>
-        )}
+          {!!completedCrop && !showOptimizer && (
+            <div className={showPreview ? "h-full" : ""}>
+              <canvas
+                ref={previewCanvasRef}
+                style={{
+                  objectFit: "contain",
+                  width: showPreview ? completedCrop.width : 0,
+                  height: showPreview ? completedCrop.height : 0,
+                  opacity: showPreview ? 1 : 0,
+                }}
+              />
+            </div>
+          )}
+        </ViewTransition>
+
+        {showOptimizer && <Optimizer />}
       </section>
 
       <section className="min-h-16 flex items-center">footer</section>
