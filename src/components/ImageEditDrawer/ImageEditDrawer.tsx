@@ -13,7 +13,7 @@ import {
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
 // import { Button } from "@/components/ui/button";
 import type { EditData } from "../ImageList/ImageList";
-import ImageCropper from "../ImageCropper/ImageCropper";
+import ImageOptimizer from "../ImageOptimizer/ImageOptimizer";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -39,7 +39,7 @@ const ImageEditDrawer = ({ data, onClose }: Props) => {
           <SheetTitle className="invisible h-0">Title</SheetTitle>
 
           <section className="h-dvh">
-            <ImageCropper data={data} />
+            <ImageOptimizer data={data} />
           </section>
 
         </div>

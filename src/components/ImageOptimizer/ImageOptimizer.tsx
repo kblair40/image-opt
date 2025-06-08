@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
+import { unstable_ViewTransition as ViewTransition } from "react";
 import { Crop as CropIcon, Save, ChevronRight, ArrowRight } from "lucide-react";
 import ReactCrop from "react-image-crop";
 import type { Crop, PixelCrop, PercentCrop } from "react-image-crop";
@@ -28,7 +29,7 @@ type Props = {
   data: EditData;
 };
 
-const ImageCropper = ({ data }: Props) => {
+const ImageOptimizer = ({ data }: Props) => {
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspect, setAspect] = useState<number | undefined>(
@@ -172,4 +173,4 @@ const ImageCropper = ({ data }: Props) => {
   );
 };
 
-export default ImageCropper;
+export default ImageOptimizer;
