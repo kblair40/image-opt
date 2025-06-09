@@ -124,6 +124,10 @@ body {
     @apply bg-background text-foreground;
   }
 
+  button {
+    @apply cursor-pointer;
+  }
+
   .centered {
     @apply flex justify-center items-center;
   }
@@ -135,6 +139,6 @@ body {
     @apply border border-neutral-700 sm:border-emerald-600 md:border-blue-500 lg:border-red-500 xl:border-neutral-700;
   }
   .child-border > * {
-    @apply border border-neutral-700
+    @apply border border-neutral-700;
   }
 }

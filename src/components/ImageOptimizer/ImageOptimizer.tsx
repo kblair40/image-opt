@@ -94,49 +94,55 @@ const ImageOptimizer = ({ data }: Props) => {
   return (
     <div className="px-4 w-full h-dvh max-h-dvh flex flex-col">
       <section className="pt-3 pb-2 pr-20 flex justify-between">
-        <div className="text-sm flex items-center flex-row gap-x-2">
-          <p>
-            {initialData.width} x {initialData.height}
-          </p>
-          {completedCrop && <ArrowRight size={20} className="" />}
-          <p>
-            {completedCrop
-              ? `${Math.round(completedCrop.width)} x ${Math.round(
-                  completedCrop.height
-                )}`
-              : ""}
-          </p>
-
-          {/* <pre>{JSON.stringify(crop)}</pre> */}
-        </div>
-
-        <div className="flex gap-x-4">
-          <div className="flex items-center gap-x-2 mr-8">
-            <Label>Force Aspect?</Label>
-            <Checkbox
-              checked={!!aspect}
-              onCheckedChange={(v) => handleToggleAspectRatio(!!v)}
-            />
-          </div>
-
-          <div className="flex items-center gap-x-4">
-            {showPreview ? (
-              <Button onClick={() => setShowPreview(false)}>
-                Show Original
-              </Button>
-            ) : (
-              <Button onClick={() => setShowPreview(true)}>
-                Crop <CropIcon />
-              </Button>
+        <section className="flex gap-x-8">
+          <div className="text-sm flex items-center flex-row gap-x-2">
+            {mode === "crop" && (
+              <>
+                <p>
+                  {initialData.width} x {initialData.height}
+                </p>
+                {completedCrop && <ArrowRight size={20} className="" />}
+              </>
             )}
 
-            {showPreview && (
-              <Button onClick={handleClickDoneCropping}>
-                Done Cropping <Save />
-              </Button>
+            <p>
+              {completedCrop
+                ? `${Math.round(completedCrop.width)} x ${Math.round(
+                    completedCrop.height
+                  )}`
+                : ""}
+            </p>
+          </div>
+
+          <div className="flex gap-x-4">
+            {mode === "crop" && (
+              <div className="flex items-center gap-x-2 mr-8">
+                <Label>Force Aspect?</Label>
+                <Checkbox
+                  checked={!!aspect}
+                  onCheckedChange={(v) => handleToggleAspectRatio(!!v)}
+                />
+              </div>
             )}
           </div>
-        </div>
+        </section>
+
+        <section className="flex gap-x-3">
+          <Button
+            size="sm"
+            onClick={() => (mode !== "crop" ? setMode("crop") : {})}
+            variant={mode === "crop" ? "default" : "secondary"}
+          >
+            Crop
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => (mode !== "optimize" ? setMode("optimize") : {})}
+            variant={mode === "optimize" ? "default" : "secondary"}
+          >
+            Optimize
+          </Button>
+        </section>
       </section>
 
       <section className={clsx("grow overflow-auto centered z-50")}>
