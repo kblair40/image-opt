@@ -24,6 +24,7 @@ import {
 } from "@/lib/client-image-utils";
 import { useDebounceEffect } from "@/hooks/useDebounceEffect";
 import Optimizer from "./Optimizer";
+import clsx from "clsx";
 
 type Props = {
   data: EditData;
@@ -132,7 +133,13 @@ const ImageOptimizer = ({ data }: Props) => {
         </div>
       </section>
 
-      <section className="grow overflow-auto centered z-50">
+      {/* <div className="flex"> */}
+      <section
+        className={clsx(
+          "grow overflow-auto centered z-50",
+          showOptimizer ? "hidden" : ""
+        )}
+      >
         {!showPreview && !showOptimizer && (
           <div className="h-full">
             <ReactCrop
@@ -168,9 +175,17 @@ const ImageOptimizer = ({ data }: Props) => {
             />
           </div>
         )}
-
-        {showOptimizer && <Optimizer />}
       </section>
+
+      <section
+        className={clsx(
+          "grow overflow-auto centered z-50",
+          showOptimizer ? "" : "hidden"
+        )}
+      >
+        <Optimizer />
+      </section>
+      {/* </div> */}
 
       <section className="min-h-16 flex items-center">footer</section>
     </div>
