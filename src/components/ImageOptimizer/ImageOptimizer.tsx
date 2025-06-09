@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { Crop as CropIcon, Save, ChevronRight, ArrowRight } from "lucide-react";
+import { Crop as CropIcon, ArrowRight } from "lucide-react";
 import ReactCrop from "react-image-crop";
 import type { Crop, PixelCrop, PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -25,12 +25,15 @@ import {
 import { useDebounceEffect } from "@/hooks/useDebounceEffect";
 import Optimizer from "./Optimizer";
 import clsx from "clsx";
+import { useImagesContext } from "@/hooks/useImagesContext";
 
 type Props = {
   data: EditData;
 };
 
 const ImageOptimizer = ({ data }: Props) => {
+  const { setImgToEdit } = useImagesContext();
+
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspect, setAspect] = useState<number | undefined>(

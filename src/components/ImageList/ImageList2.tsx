@@ -15,10 +15,11 @@ export type EditData = Metadata & { image: File; dataUrl: string };
 const ImageList2 = (props: Props) => {
   const [editData, setEditData] = useState<EditData | null>(null);
 
-  const { clearImages, acceptedImages, rejectedImages } = useImagesContext();
+  const { imgToEdit, acceptedImages, setImgToEdit } = useImagesContext();
 
   const handleClickEditImage = (image: File, md: Metadata, dataUrl: string) => {
-    setEditData({ image, dataUrl, ...md });
+    setImgToEdit({ image, dataUrl, ...md });
+    // setEditData({ image, dataUrl, ...md });
   };
 
   return (
@@ -46,9 +47,8 @@ const ImageList2 = (props: Props) => {
         );
       })}
 
-      {editData && (
-        <ImageEditDrawer onClose={() => setEditData(null)} data={editData} />
-      )}
+      {/* {editData && ( */}
+      {imgToEdit && <ImageEditDrawer />}
     </div>
   );
 };

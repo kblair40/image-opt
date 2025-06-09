@@ -15,18 +15,18 @@ import {
 import type { EditData } from "../ImageList/ImageList";
 import ImageOptimizer from "../ImageOptimizer/ImageOptimizer";
 import { cn } from "@/lib/utils";
+import { useImagesContext } from "@/hooks/useImagesContext";
 
-type Props = {
-  data: EditData;
-  onClose: () => void;
-};
+const ImageEditDrawer = () => {
+  const { imgToEdit, setImgToEdit } = useImagesContext();
 
-const ImageEditDrawer = ({ data, onClose }: Props) => {
   return (
     <Sheet
-      open={true}
+      // open={true}
+      open={!!imgToEdit}
       onOpenChange={(open) => {
-        if (!open) onClose();
+        // if (!open) onClose();
+        if (!open) setImgToEdit(undefined);
       }}
     >
       {/* <SheetContent className="h-dvh max-h-11/12" side="bottom"> */}
@@ -39,9 +39,8 @@ const ImageEditDrawer = ({ data, onClose }: Props) => {
           <SheetTitle className="invisible h-0">Title</SheetTitle>
 
           <section className="h-dvh">
-            <ImageOptimizer data={data} />
+            {imgToEdit && <ImageOptimizer data={imgToEdit} />}
           </section>
-
         </div>
 
         {/* <SheetFooter>
