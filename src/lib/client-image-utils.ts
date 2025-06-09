@@ -185,13 +185,14 @@ export function getSizeString(bytes?: number) {
 export function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
-  aspect: number
+  aspect: number,
+  width = 90
 ) {
   return centerCrop(
     makeAspectCrop(
       {
         unit: "%",
-        width: 90,
+        width,
       },
       aspect,
       mediaWidth,

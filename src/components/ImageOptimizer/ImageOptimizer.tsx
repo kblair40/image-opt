@@ -57,7 +57,7 @@ const ImageOptimizer = ({ data }: Props) => {
     if (crop) return;
     if (aspect) {
       const { width, height } = e.currentTarget;
-      setCrop(centerAspectCrop(width, height, aspect));
+      setCrop(centerAspectCrop(width, height, aspect, 100));
     }
   }
 
@@ -102,6 +102,8 @@ const ImageOptimizer = ({ data }: Props) => {
                 )}`
               : ""}
           </p>
+
+          {/* <pre>{JSON.stringify(crop)}</pre> */}
         </div>
 
         <div className="flex gap-x-4">
@@ -124,20 +126,19 @@ const ImageOptimizer = ({ data }: Props) => {
               </Button>
             )}
 
-            {showPreview && (
+            {/* {showPreview && (
               <Button onClick={handleClickSave}>
                 Save <Save />
               </Button>
-            )}
+            )} */}
           </div>
         </div>
       </section>
 
-      {/* <div className="flex"> */}
       <section
         className={clsx(
-          "grow overflow-auto centered z-50",
-          showOptimizer ? "hidden" : ""
+          "grow overflow-auto centered z-50"
+          // showOptimizer ? "hidden" : ""
         )}
       >
         {!showPreview && !showOptimizer && (
@@ -177,17 +178,19 @@ const ImageOptimizer = ({ data }: Props) => {
         )}
       </section>
 
-      <section
+      {/* <section
         className={clsx(
           "grow overflow-auto centered z-50",
           showOptimizer ? "" : "hidden"
         )}
       >
         <Optimizer />
-      </section>
+      </section> */}
       {/* </div> */}
 
-      <section className="min-h-16 flex items-center">footer</section>
+      <section className="min-h-16 flex items-center">
+        <Optimizer />
+      </section>
     </div>
   );
 };

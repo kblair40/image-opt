@@ -1,9 +1,24 @@
 import React from "react";
+import type { PixelCrop } from "react-image-crop";
 
-type Props = {};
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const Optimizer = (props: Props) => {
-  return <div className="h-full centered">Optimizer</div>;
+type Props = {
+  crop?: PixelCrop;
+};
+
+const Optimizer = ({ crop }: Props) => {
+  return <div className="h-full w-full centered"></div>;
 };
 
 export default Optimizer;
