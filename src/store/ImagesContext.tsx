@@ -8,6 +8,8 @@ interface ImagesContextType {
   rejectedImages: FileRejection[];
   handleDroppedImages: (acc: File[], rej: FileRejection[]) => void;
   clearImages: () => void;
+  imgToEdit?: File;
+  setImgToEdit: React.Dispatch<React.SetStateAction<File | undefined>>;
 }
 
 export const ImagesContext = createContext<ImagesContextType>({
@@ -15,11 +17,13 @@ export const ImagesContext = createContext<ImagesContextType>({
   rejectedImages: [],
   handleDroppedImages: (acc: File[], rej: FileRejection[]) => {},
   clearImages: () => {},
+  setImgToEdit: (f: React.SetStateAction<File | undefined>) => {},
 });
 
 const ImagesContextProvider = ({ children }: React.PropsWithChildren) => {
   const [acceptedImages, setAcceptedImages] = useState<File[]>([]);
   const [rejectedImages, setRejectedImages] = useState<FileRejection[]>([]);
+  const [imgToEdit, setImgToEdit] = useState<File>();
 
   const handleDroppedImages = (
     acceptedImages: File[],
@@ -41,6 +45,8 @@ const ImagesContextProvider = ({ children }: React.PropsWithChildren) => {
         rejectedImages,
         handleDroppedImages,
         clearImages,
+        imgToEdit,
+        setImgToEdit,
       }}
     >
       {children}

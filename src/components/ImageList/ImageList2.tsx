@@ -6,7 +6,6 @@ import clsx from "clsx";
 import type { Metadata } from "@/lib/image-types";
 import { useImagesContext } from "@/hooks/useImagesContext";
 import ImageListImage2 from "./ImageListImage2";
-// import ImageListImage, { type Metadata } from "./ImageListImage";
 import ImageEditDrawer from "../ImageEditDrawer/ImageEditDrawer";
 
 type Props = {};
@@ -28,7 +27,7 @@ const ImageList2 = (props: Props) => {
         "w-full grid",
         "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
         "gap-x-8 gap-y-6",
-        "justify-center",
+        "justify-center"
         // "responsive-border"
       )}
     >
