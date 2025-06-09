@@ -17,8 +17,8 @@ type Props = {
   crop?: PixelCrop;
 };
 
-const Optimizer = ({ crop }: Props) => {
+const ImageOptimizer = ({ crop }: Props) => {
   return <div className="h-full w-full centered"></div>;
 };
 
-export default Optimizer;
+export default ImageOptimizer;

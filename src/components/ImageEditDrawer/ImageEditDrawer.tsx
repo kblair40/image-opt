@@ -13,7 +13,7 @@ import {
 // import { AspectRatio } from "@/components/ui/aspect-ratio";
 // import { Button } from "@/components/ui/button";
 import type { EditData } from "../ImageList/ImageList";
-import ImageOptimizer from "../ImageOptimizer/ImageOptimizer";
+import ImageEditor from "../ImageEditor/ImageEditor";
 import { cn } from "@/lib/utils";
 import { useImagesContext } from "@/hooks/useImagesContext";
 
@@ -39,7 +39,7 @@ const ImageEditDrawer = () => {
           <SheetTitle className="invisible h-0">Title</SheetTitle>
 
           <section className="h-dvh">
-            {imgToEdit && <ImageOptimizer data={imgToEdit} />}
+            {imgToEdit && <ImageEditor data={imgToEdit} />}
           </section>
         </div>
 
