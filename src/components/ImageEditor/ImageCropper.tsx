@@ -64,7 +64,7 @@ const ImageCropper = ({
   );
 
   return (
-    <div className="">
+    <div className="h-full">
       {!showPreview && (
         <ReactCrop
           crop={crop}

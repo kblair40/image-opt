@@ -1,5 +1,6 @@
 import React from "react";
 import type { PixelCrop } from "react-image-crop";
+import Image from "next/image";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,10 +16,23 @@ import {
 
 type Props = {
   crop?: PixelCrop;
+  dataUrl?: string;
+  // dims: { width: number; height: number };
 };
 
-const ImageOptimizer = ({ crop }: Props) => {
-  return <div className="h-full w-full centered"></div>;
+const ImageOptimizer = ({ crop, dataUrl }: Props) => {
+  return (
+    <div className="h-full w-full centered">
+      {!!crop && !!dataUrl ? (
+        <Image
+          alt="placeholder"
+          src={dataUrl}
+          width={crop.width}
+          height={crop.height}
+        />
+      ) : null}
+    </div>
+  );
 };
 
 export default ImageOptimizer;

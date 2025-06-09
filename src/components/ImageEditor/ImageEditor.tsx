@@ -8,7 +8,7 @@ import type { EditData } from "@/components/ImageList/ImageList";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { getSizeString } from "@/lib/client-image-utils";
+import { getSizeString, toBlob } from "@/lib/client-image-utils";
 import ImageOptimizer from "./ImageOptimizer";
 import clsx from "clsx";
 import { useImagesContext } from "@/hooks/useImagesContext";
@@ -29,6 +29,7 @@ const ImageEditor = ({ data }: Props) => {
     data.width / data.height
   );
   const [showPreview, setShowPreview] = useState(false);
+  const [dataUrl, setDataUrl] = useState(data.dataUrl);
 
   const initialData = {
     size: getSizeString(data.size),
@@ -41,8 +42,27 @@ const ImageEditor = ({ data }: Props) => {
     else setAspect(undefined);
   }
 
-  function handleChangeMode(_mode: Mode) {
+  async function handleChangeMode(_mode: Mode) {
     if (_mode !== mode) {
+      if (_mode === "optimize") {
+        if (typeof window === "undefined") {
+          return;
+        }
+
+        const canvas = document.querySelector<HTMLCanvasElement>("canvas");
+
+        if (!canvas) {
+          console.error("Canvas element not found");
+          return;
+        }
+
+        console.log("CANVAS:", canvas);
+
+        const dataUrl = canvas.toDataURL(`image/${data.format}`, 1.0);
+        const { height, width } = canvas;
+        console.log("\nData URL:", dataUrl, { width, height });
+        setDataUrl(dataUrl);
+      }
       setMode(_mode);
     }
   }
@@ -116,7 +136,14 @@ const ImageEditor = ({ data }: Props) => {
             aspect={aspect}
           />
         ) : (
-          <ImageOptimizer />
+          <ImageOptimizer
+            crop={completedCrop}
+            dataUrl={dataUrl}
+            // dims={{
+            //   width: completedCrop?.width || 0,
+            //   height: completedCrop?.height || 0,
+            // }}
+          />
         )}
       </section>
 

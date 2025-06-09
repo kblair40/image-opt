@@ -143,7 +143,7 @@ export async function canvasPreview(
 
 let previewUrl = "";
 
-function toBlob(canvas: HTMLCanvasElement): Promise<Blob | null> {
+export function toBlob(canvas: HTMLCanvasElement): Promise<Blob | null> {
   return new Promise((resolve) => {
     canvas.toBlob(resolve);
   });
