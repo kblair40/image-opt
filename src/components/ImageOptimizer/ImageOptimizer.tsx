@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { Crop as CropIcon, ArrowRight } from "lucide-react";
+import { Crop as CropIcon, ArrowRight, Save } from "lucide-react";
 import ReactCrop from "react-image-crop";
 import type { Crop, PixelCrop, PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -26,6 +26,7 @@ import { useDebounceEffect } from "@/hooks/useDebounceEffect";
 import Optimizer from "./Optimizer";
 import clsx from "clsx";
 import { useImagesContext } from "@/hooks/useImagesContext";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Props = {
   data: EditData;
@@ -34,6 +35,7 @@ type Props = {
 const ImageOptimizer = ({ data }: Props) => {
   const { setImgToEdit } = useImagesContext();
 
+  const [mode, setMode] = useState<"crop" | "optimize">("crop");
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspect, setAspect] = useState<number | undefined>(
@@ -64,9 +66,8 @@ const ImageOptimizer = ({ data }: Props) => {
     }
   }
 
-  function handleClickSave() {
-    // setShowOptimizer(true);
-    setShowOptimizer((cur) => !cur);
+  function handleClickDoneCropping() {
+    setMode("optimize");
   }
 
   useDebounceEffect(
@@ -129,22 +130,17 @@ const ImageOptimizer = ({ data }: Props) => {
               </Button>
             )}
 
-            {/* {showPreview && (
-              <Button onClick={handleClickSave}>
-                Save <Save />
+            {showPreview && (
+              <Button onClick={handleClickDoneCropping}>
+                Done Cropping <Save />
               </Button>
-            )} */}
+            )}
           </div>
         </div>
       </section>
 
-      <section
-        className={clsx(
-          "grow overflow-auto centered z-50"
-          // showOptimizer ? "hidden" : ""
-        )}
-      >
-        {!showPreview && !showOptimizer && (
+      <section className={clsx("grow overflow-auto centered z-50")}>
+        {mode === "crop" && !showPreview && (
           <div className="h-full">
             <ReactCrop
               crop={crop}
@@ -166,7 +162,7 @@ const ImageOptimizer = ({ data }: Props) => {
           </div>
         )}
 
-        {!!completedCrop && !showOptimizer && (
+        {mode === "crop" && !!completedCrop && (
           <div className={showPreview ? "h-full" : ""}>
             <canvas
               ref={previewCanvasRef}
@@ -181,18 +177,8 @@ const ImageOptimizer = ({ data }: Props) => {
         )}
       </section>
 
-      {/* <section
-        className={clsx(
-          "grow overflow-auto centered z-50",
-          showOptimizer ? "" : "hidden"
-        )}
-      >
-        <Optimizer />
-      </section> */}
-      {/* </div> */}
-
       <section className="min-h-16 flex items-center">
-        <Optimizer />
+        {/* <Optimizer /> */}
       </section>
     </div>
   );
