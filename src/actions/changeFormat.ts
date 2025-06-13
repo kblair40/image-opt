@@ -10,14 +10,17 @@ export async function changeFormat(
   type: AllowedImageFormat
 ): Promise<{ metadata: SerializedMetadata; dataUrl: string } | null> {
   try {
-    console.log("\nchangeFormat args:", { dataUrl });
+    console.log("\nchangeFormat args:", {
+      dataUrl: dataUrl.slice(0, 200),
+      type,
+    });
     const buf = Buffer.from(dataUrl.split(",")[1], "base64");
     const img = sharp(buf).toFormat(type, { quality: 100 });
 
     const bufOut = await img.toBuffer();
     const b64Url = bufOut.toString("base64");
     const mdOut = await img.metadata();
-    console.log("\nb64Url:", b64Url);
+    console.log("\nb64Url:", b64Url.slice(0, 200));
 
     console.log("\n");
     // return serializeMetadata(mdOut)

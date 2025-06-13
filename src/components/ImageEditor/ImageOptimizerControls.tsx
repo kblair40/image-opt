@@ -8,6 +8,7 @@ import {
   toBlob,
   getSizeString,
 } from "@/lib/client-image-utils";
+import { changeFormat } from "@/actions/changeFormat";
 import { getImageMetadata } from "@/actions/getImageMetadata";
 import { getImageSize, getImageEtag } from "next/dist/server/image-optimizer";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,6 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -33,6 +33,8 @@ type Data = {
   diffStr: string;
   size: { before: number; after: number };
   format: { before: string; after: string };
+  croppedUrl: string;
+  originalUrl: string;
 };
 
 const ImageOptimizerControls = ({ croppedImage, originalImage }: Props) => {
@@ -72,6 +74,8 @@ const ImageOptimizerControls = ({ croppedImage, originalImage }: Props) => {
           diffStr: getSizeString(os - cs),
           size: { before: os, after: cs },
           format: { before: originalMd.format, after: croppedMd.format },
+          croppedUrl: croppedImage,
+          originalUrl: originalImage,
         });
       } catch (e) {
         console.warn("Failed to load metadata:", e);
@@ -81,9 +85,14 @@ const ImageOptimizerControls = ({ croppedImage, originalImage }: Props) => {
     getMetadata();
   }, [croppedImage, originalImage]);
 
-  function handleChangeType(type: AllowedImageFormat) {
+  async function handleChangeType(type: AllowedImageFormat) {
+    if (!data) {
+      return;
+    }
+
     try {
-      //
+      const res = await changeFormat(data.croppedUrl, type);
+      console.log("Type change result:", res, "\n");
     } catch (e) {
       console.log("Failed to change type:", e);
     }
@@ -97,7 +106,7 @@ const ImageOptimizerControls = ({ croppedImage, originalImage }: Props) => {
         {originalData && <pre>{JSON.stringify(originalData, null, 2)}</pre>} */}
       </div>
 
-      <Select>
+      <Select onValueChange={(v) => handleChangeType(v as AllowedImageFormat)}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select a fruit" />
         </SelectTrigger>
