@@ -3,22 +3,20 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import ReactCrop from "react-image-crop";
-import type { Crop, PixelCrop } from "react-image-crop";
+import type { Crop, PercentCrop, PixelCrop } from "react-image-crop";
 
 import "react-image-crop/dist/ReactCrop.css";
 
 import { useDebounceEffect } from "@/hooks/useDebounceEffect";
 import { EditData } from "@/store/ImagesContext";
-import {
-  centerAspectCrop,
-  canvasPreview,
-} from "@/lib/client-image-utils";
+import { centerAspectCrop, canvasPreview } from "@/lib/client-image-utils";
 
 type Props = {
   data: EditData;
   showPreview: boolean;
   completedCrop?: PixelCrop;
-  onCropChange: (pixelCrop: PixelCrop) => void;
+  completedPctCrop?: PercentCrop;
+  onCropChange: (pxCrop: PixelCrop, pctCrop: PercentCrop) => void;
   aspect?: number;
 };
 
@@ -26,13 +24,14 @@ const ImageCropper = ({
   data,
   showPreview,
   completedCrop,
+  completedPctCrop,
   onCropChange,
   aspect,
 }: Props) => {
-  const [crop, setCrop] = useState<Crop>();
-
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [crop, setCrop] = useState<Crop | undefined>(completedPctCrop);
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (crop) return;
@@ -44,11 +43,6 @@ const ImageCropper = ({
 
   useDebounceEffect(
     async () => {
-      // console.log("DEBOUNCE EFFECT", {
-      //   completedCrop,
-      //   img: imgRef.current,
-      //   canvas: previewCanvasRef.current,
-      // });
       if (
         completedCrop?.width &&
         completedCrop?.height &&
@@ -69,7 +63,7 @@ const ImageCropper = ({
         <ReactCrop
           crop={crop}
           onChange={(_, percentCrop) => setCrop(percentCrop)}
-          onComplete={(c) => onCropChange(c)}
+          onComplete={(pxCrop, pctCrop) => onCropChange(pxCrop, pctCrop)}
           aspect={aspect}
           ruleOfThirds={true}
         >

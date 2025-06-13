@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import type { PixelCrop } from "react-image-crop";
+import type { PercentCrop, PixelCrop } from "react-image-crop";
 
 import type { EditData } from "@/components/ImageList/ImageList";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ const ImageEditor = ({ data }: Props) => {
 
   const [mode, setMode] = useState<Mode>("crop");
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [completedPctCrop, setCompletedPctCrop] = useState<PercentCrop>();
   const [aspect, setAspect] = useState<number | undefined>(
     data.width / data.height
   );
@@ -62,13 +63,22 @@ const ImageEditor = ({ data }: Props) => {
         const { height, width } = canvas;
         console.log("\nData URL:", dataUrl, { width, height });
         setDataUrl(dataUrl);
+      } else if (showPreview) {
+        // Before setting mode to 'crop', ensure the preview image is not being shown
+        setShowPreview(false);
       }
+
       setMode(_mode);
     }
   }
 
-  function handleCropChange(crop: PixelCrop) {
-    setCompletedCrop(crop);
+  function handleCropChange(pxCrop: PixelCrop, pctCrop: PercentCrop) {
+    setCompletedCrop(pxCrop);
+    setCompletedPctCrop(pctCrop);
+  }
+
+  function handleTogglePreview() {
+    setShowPreview((cur) => !cur);
   }
 
   return (
@@ -126,7 +136,7 @@ const ImageEditor = ({ data }: Props) => {
         </section>
       </section>
 
-      <section className={clsx("grow overflow-auto centered z-50 py-4")}>
+      <section className={clsx("grow overflow-auto centered z-50 py-3 px-1.5")}>
         {mode === "crop" ? (
           <ImageCropper
             data={data}
@@ -134,6 +144,7 @@ const ImageEditor = ({ data }: Props) => {
             onCropChange={handleCropChange}
             completedCrop={completedCrop}
             aspect={aspect}
+            completedPctCrop={completedPctCrop}
           />
         ) : (
           <ImageOptimizer
@@ -148,9 +159,31 @@ const ImageEditor = ({ data }: Props) => {
       </section>
 
       <section className="min-h-16 centered">
-        <Button disabled={!completedCrop} size="sm" onClick={() => setShowPreview((cur) => !cur)}>
-          {!showPreview ? "Preview Cropped Image" : "Show Original Image"}
-        </Button>
+        {mode === "crop" && (
+          <Button
+            disabled={!completedCrop}
+            size="sm"
+            onClick={handleTogglePreview}
+          >
+            {!showPreview && mode === "crop"
+              ? "Preview Cropped Image"
+              : "Show Original Image"}
+          </Button>
+        )}
+
+        {mode === "optimize" && (
+          <div className="flex items-center space-x-8">
+            <section className="flex items-center space-x-2">
+              {/*  */}
+              {/*  */}
+            </section>
+            <section className="flex items-center space-x-2">
+              {/*  */}
+              {/*  */}
+            </section>
+            {/*  */}
+          </div>
+        )}
       </section>
     </div>
   );
