@@ -126,7 +126,7 @@ const ImageEditor = ({ data }: Props) => {
         </section>
       </section>
 
-      <section className={clsx("grow overflow-auto centered z-50")}>
+      <section className={clsx("grow overflow-auto centered z-50 py-4")}>
         {mode === "crop" ? (
           <ImageCropper
             data={data}
