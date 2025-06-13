@@ -148,8 +148,8 @@ const ImageEditor = ({ data }: Props) => {
       </section>
 
       <section className="min-h-16 centered">
-        <Button size="sm" onClick={() => setShowPreview((cur) => !cur)}>
-          {showPreview ? "Show Original Image" : "Preview Cropped Image"}
+        <Button disabled={!completedCrop} size="sm" onClick={() => setShowPreview((cur) => !cur)}>
+          {!showPreview ? "Preview Cropped Image" : "Show Original Image"}
         </Button>
       </section>
     </div>
