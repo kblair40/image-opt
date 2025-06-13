@@ -2,40 +2,112 @@
 
 import React, { useState, useEffect } from "react";
 
-import type { Metadata } from "@/lib/image-types";
-import { deserializeMetadata, toBlob } from "@/lib/client-image-utils";
+import type { AllowedImageFormat, Metadata } from "@/lib/image-types";
+import {
+  deserializeMetadata,
+  toBlob,
+  getSizeString,
+} from "@/lib/client-image-utils";
 import { getImageMetadata } from "@/actions/getImageMetadata";
 import { getImageSize, getImageEtag } from "next/dist/server/image-optimizer";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Props = {
-  dataUrl: string;
+  croppedImage: string;
+  originalImage: string;
 };
 
-const ImageOptimizerControls = ({ dataUrl }: Props) => {
+type Data = {
+  diff: number;
+  diffPct: string;
+  diffStr: string;
+  size: { before: number; after: number };
+  format: { before: string; after: string };
+};
+
+const ImageOptimizerControls = ({ croppedImage, originalImage }: Props) => {
+  const [croppedMd, setCroppedMd] = useState<Metadata>();
+  const [originalMd, setOriginalMd] = useState<Metadata>();
+  const [data, setData] = useState<Data | null>(null);
+
   const [loading, setLoading] = useState(false);
-  const [metadata, setMetadata] = useState<Metadata>();
+  const [changingType, setChangingType] = useState(false);
 
   useEffect(() => {
     async function getMetadata() {
       try {
-        const md = await getImageMetadata(dataUrl);
-        console.log("Metadata:", md);
-        if (md) {
-          setMetadata(deserializeMetadata(md));
+        const [croppedMd, originalMd] = await Promise.all([
+          getImageMetadata(croppedImage),
+          getImageMetadata(originalImage),
+        ]);
+        console.log("Metadata:", { croppedMd, originalMd });
+
+        if (!croppedMd || !originalMd) {
+          return;
         }
+
+        setCroppedMd(deserializeMetadata(croppedMd));
+        setOriginalMd(deserializeMetadata(originalMd));
+
+        const cs = croppedMd.size;
+        const os = originalMd.size;
+
+        if (!cs || !os) {
+          return <div className="centered">Size information is required</div>;
+        }
+
+        setData({
+          diff: os - cs,
+          diffPct: ((cs / os) * 100 - 100).toFixed(2) + "%",
+          diffStr: getSizeString(os - cs),
+          size: { before: os, after: cs },
+          format: { before: originalMd.format, after: croppedMd.format },
+        });
       } catch (e) {
         console.warn("Failed to load metadata:", e);
       }
     }
+
     getMetadata();
-  }, [dataUrl]);
+  }, [croppedImage, originalImage]);
+
+  function handleChangeType(type: AllowedImageFormat) {
+    try {
+      //
+    } catch (e) {
+      console.log("Failed to change type:", e);
+    }
+  }
 
   return (
     <>
-      ImageOptimizerControls
-      <div className="bg-white z-[100000] fixed bottom-0 left-0 w-fit px-1 max-h-80 overflow-y-auto">
-        {metadata && <pre>{JSON.stringify(metadata, null, 2)}</pre>}
+      <div className="bg-white z-[100000] fixed bottom-40 shadow-md left-0 w-fit px-1 max-h-80 overflow-y-auto">
+        {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+        {/* {croppedData && <pre>{JSON.stringify(croppedData, null, 2)}</pre>}
+        {originalData && <pre>{JSON.stringify(originalData, null, 2)}</pre>} */}
       </div>
+
+      <Select>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select a fruit" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="jpge">JPEG</SelectItem>
+          <SelectItem value="webp">WEBP</SelectItem>
+          <SelectItem value="png">PNG</SelectItem>
+          <SelectItem value="avif">AVIF</SelectItem>
+        </SelectContent>
+      </Select>
     </>
   );
 };

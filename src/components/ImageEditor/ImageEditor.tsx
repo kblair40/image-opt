@@ -180,7 +180,10 @@ const ImageEditor = ({ data }: Props) => {
         )}
 
         {mode === "optimize" && !!croppedImage && (
-          <ImageOptimizerControls dataUrl={croppedImage} />
+          <ImageOptimizerControls
+            originalImage={dataUrl}
+            croppedImage={croppedImage}
+          />
         )}
       </section>
     </div>
