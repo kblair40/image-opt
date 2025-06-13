@@ -16,7 +16,11 @@ type Props = {
   showPreview: boolean;
   completedCrop?: PixelCrop;
   completedPctCrop?: PercentCrop;
-  onCropChange: (pxCrop: PixelCrop, pctCrop: PercentCrop) => void;
+  onCropChange: (
+    pxCrop: PixelCrop,
+    pctCrop: PercentCrop,
+    canvas: HTMLCanvasElement
+  ) => void;
   aspect?: number;
 };
 
@@ -41,21 +45,41 @@ const ImageCropper = ({
     }
   }
 
-  useDebounceEffect(
-    async () => {
-      if (
-        completedCrop?.width &&
-        completedCrop?.height &&
-        imgRef.current &&
-        previewCanvasRef.current
-      ) {
-        // We use canvasPreview as it's much faster than imgPreview.
-        canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop);
-      }
-    },
-    100,
-    [completedCrop]
-  );
+  // useDebounceEffect(
+  //   async () => {
+  //     if (
+  //       completedCrop?.width &&
+  //       completedCrop?.height &&
+  //       imgRef.current &&
+  //       previewCanvasRef.current
+  //     ) {
+  //       // We use canvasPreview as it's much faster than imgPreview.
+  //       canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop);
+  //     }
+  //   },
+  //   100,
+  //   [completedCrop]
+  // );
+
+  function handleCropChange(px: PixelCrop, pct: PercentCrop) {
+    if (
+      // completedCrop?.width &&
+      // completedCrop?.height &&
+      imgRef.current &&
+      previewCanvasRef.current
+    ) {
+      canvasPreview(imgRef.current, previewCanvasRef.current, px);
+
+      console.log("Canvas:", previewCanvasRef.current);
+      onCropChange(px, pct, previewCanvasRef.current);
+    } else {
+      console.log("SOMETHING MISSING:", {
+        completedCrop,
+        imgRef: imgRef.current,
+        previewCanvasRef: previewCanvasRef.current,
+      });
+    }
+  }
 
   return (
     <div className="h-full">
@@ -63,7 +87,7 @@ const ImageCropper = ({
         <ReactCrop
           crop={crop}
           onChange={(_, percentCrop) => setCrop(percentCrop)}
-          onComplete={(pxCrop, pctCrop) => onCropChange(pxCrop, pctCrop)}
+          onComplete={handleCropChange}
           aspect={aspect}
           ruleOfThirds={true}
         >
@@ -79,17 +103,17 @@ const ImageCropper = ({
         </ReactCrop>
       )}
 
-      {completedCrop && (
-        <canvas
-          ref={previewCanvasRef}
-          style={{
-            objectFit: "contain",
-            width: showPreview ? completedCrop.width : 0,
-            height: showPreview ? completedCrop.height : 0,
-            opacity: showPreview ? 1 : 0,
-          }}
-        />
-      )}
+      {/* {completedCrop && ( */}
+      <canvas
+        ref={previewCanvasRef}
+        style={{
+          objectFit: "contain",
+          width: showPreview && completedCrop ? completedCrop.width : 0,
+          height: showPreview && completedCrop ? completedCrop.height : 0,
+          opacity: showPreview ? 1 : 0,
+        }}
+      />
+      {/* )} */}
     </div>
   );
 };

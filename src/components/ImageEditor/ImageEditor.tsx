@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { getSizeString, toBlob } from "@/lib/client-image-utils";
 import ImageOptimizer from "./ImageOptimizer";
+import ImageOptimizerControls from "./ImageOptimizerControls";
 import clsx from "clsx";
 import { useImagesContext } from "@/hooks/useImagesContext";
 import ImageCropper from "./ImageCropper";
@@ -31,6 +32,7 @@ const ImageEditor = ({ data }: Props) => {
   );
   const [showPreview, setShowPreview] = useState(false);
   const [dataUrl, setDataUrl] = useState(data.dataUrl);
+  const [croppedImage, setCroppedImage] = useState<any>();
 
   const initialData = {
     size: getSizeString(data.size),
@@ -72,9 +74,15 @@ const ImageEditor = ({ data }: Props) => {
     }
   }
 
-  function handleCropChange(pxCrop: PixelCrop, pctCrop: PercentCrop) {
+  function handleCropChange(
+    pxCrop: PixelCrop,
+    pctCrop: PercentCrop,
+    canvas: HTMLCanvasElement
+  ) {
     setCompletedCrop(pxCrop);
     setCompletedPctCrop(pctCrop);
+
+    setCroppedImage(canvas.toDataURL(`image/${data.format}`));
   }
 
   function handleTogglePreview() {
@@ -171,18 +179,8 @@ const ImageEditor = ({ data }: Props) => {
           </Button>
         )}
 
-        {mode === "optimize" && (
-          <div className="flex items-center space-x-8">
-            <section className="flex items-center space-x-2">
-              {/*  */}
-              {/*  */}
-            </section>
-            <section className="flex items-center space-x-2">
-              {/*  */}
-              {/*  */}
-            </section>
-            {/*  */}
-          </div>
+        {mode === "optimize" && !!croppedImage && (
+          <ImageOptimizerControls dataUrl={croppedImage} />
         )}
       </section>
     </div>
