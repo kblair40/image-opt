@@ -21,11 +21,12 @@ export async function changeFormat(
     const b64Url = bufOut.toString("base64");
     const mdOut = await img.metadata();
     console.log("\nb64Url:", b64Url.slice(0, 200));
+    const urlPrefix = `data:image/${mdOut.format};base64,`
 
     console.log("\n");
     // return serializeMetadata(mdOut)
     return {
-      dataUrl: b64Url,
+      dataUrl: urlPrefix + b64Url,
       metadata: serializeMetadata(mdOut),
     };
   } catch (e) {
