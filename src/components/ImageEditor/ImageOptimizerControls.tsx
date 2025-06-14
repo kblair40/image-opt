@@ -41,8 +41,6 @@ const ImageOptimizerControls = ({
   croppedImage: _croppedImage,
   originalImage,
 }: Props) => {
-  //   const [croppedMd, setCroppedMd] = useState<Metadata>();
-  //   const [originalMd, setOriginalMd] = useState<Metadata>();
   const [data, setData] = useState<Data | null>(null);
   const [croppedImage, setCroppedImage] = useState<string>(_croppedImage);
 
@@ -61,9 +59,6 @@ const ImageOptimizerControls = ({
       if (!croppedMd || !originalMd) {
         return;
       }
-
-      //   setCroppedMd(deserializeMetadata(croppedMd));
-      //   setOriginalMd(deserializeMetadata(originalMd));
 
       const cs = croppedMd.size;
       const os = originalMd.size;
@@ -86,11 +81,6 @@ const ImageOptimizerControls = ({
   );
 
   useEffect(() => {
-    // async function getMetadata() {
-    //   updateData();
-    // }
-
-    // getMetadata();
     updateData();
   }, [updateData]);
 
