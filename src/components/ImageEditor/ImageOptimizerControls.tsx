@@ -47,8 +47,72 @@ const ImageOptimizerControls = ({
   const [loading, setLoading] = useState(false);
   const [changingType, setChangingType] = useState(false);
 
+  const updateCroppedImageData = useCallback(
+    async (croppedImage: string) => {
+      if (!data) return;
+
+      const croppedMd = await getImageMetadata(croppedImage);
+      if (!croppedMd) {
+        console.log("\nError getting cropped image metadata");
+        return;
+      }
+
+      const {
+        size: { before: os },
+        format: { before: of },
+      } = data;
+
+      const cs = croppedMd.size;
+
+      if (!cs || !os) {
+        console.log("Failed getting original and/or cropped image sizes:", {
+          cs,
+          os,
+        });
+        return;
+      }
+
+      //   setData((prev) => {
+      //     if (!prev) return null;
+      //     const newData = {
+      //       ...prev,
+      //       diff: os - cs,
+      //       diffPct: ((cs / os) * 100 - 100).toFixed(2) + "%",
+      //       diffStr: getSizeString(os - cs),
+      //       size: { before: os, after: cs },
+      //       format: { before: of, after: croppedMd.format },
+      //       croppedUrl: croppedImage,
+      //     };
+
+      //     console.log("NEW DATA:", newData);
+
+      //     return newData;
+
+      //     // return !prev ? null : { ...prev };
+      //   });
+
+      setData({
+        diff: os - cs,
+        diffPct: ((cs / os) * 100 - 100).toFixed(2) + "%",
+        diffStr: getSizeString(os - cs),
+        size: { before: os, after: cs },
+        format: { before: of, after: croppedMd.format },
+        croppedUrl: croppedImage,
+        originalUrl: originalImage,
+      });
+    },
+    [data, originalImage]
+  );
+
   const updateData = useCallback(
     async (_croppedImage = croppedImage) => {
+      if (data !== null) {
+        // await updateCroppedImageData(_croppedImage);
+        console.log("CALLING UPDATE CROPPED IMAGE DATA");
+        updateCroppedImageData(_croppedImage);
+        return;
+      }
+
       const [croppedMd, originalMd] = await Promise.all([
         //   getImageMetadata(croppedImage),
         getImageMetadata(_croppedImage),
@@ -77,12 +141,43 @@ const ImageOptimizerControls = ({
         originalUrl: originalImage,
       });
     },
-    [croppedImage, originalImage]
+    [croppedImage, originalImage, updateCroppedImageData, data]
   );
 
   useEffect(() => {
-    updateData();
-  }, [updateData]);
+    async function initData() {
+      const [croppedMd, originalMd] = await Promise.all([
+        getImageMetadata(croppedImage),
+        getImageMetadata(originalImage),
+      ]);
+      console.log("Metadata:", { croppedMd, originalMd });
+
+      if (!croppedMd || !originalMd) {
+        return;
+      }
+
+      const cs = croppedMd.size;
+      const os = originalMd.size;
+
+      if (!cs || !os) {
+        return <div className="centered">Size information is required</div>;
+      }
+
+      setData({
+        diff: os - cs,
+        diffPct: ((cs / os) * 100 - 100).toFixed(2) + "%",
+        diffStr: getSizeString(os - cs),
+        size: { before: os, after: cs },
+        format: { before: originalMd.format, after: croppedMd.format },
+        croppedUrl: croppedImage,
+        originalUrl: originalImage,
+      });
+    }
+
+    if (!data) {
+      initData();
+    }
+  }, [originalImage, croppedImage, data]);
 
   async function handleChangeType(type: AllowedImageFormat) {
     if (!data) {
@@ -95,7 +190,8 @@ const ImageOptimizerControls = ({
       if (res) {
         // setCroppedMd(deserializeMetadata(res.metadata));
         setCroppedImage(res.dataUrl);
-        await updateData(res.dataUrl);
+        await updateCroppedImageData(res.dataUrl);
+        // await updateData(res.dataUrl);
       }
     } catch (e) {
       console.log("Failed to change type:", e);
