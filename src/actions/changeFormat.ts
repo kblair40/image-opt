@@ -15,13 +15,13 @@ export async function changeFormat(
       type,
     });
     const buf = Buffer.from(dataUrl.split(",")[1], "base64");
-    const img = sharp(buf).toFormat(type, { quality: 100 });
+    const img = sharp(buf).toFormat(type, { quality: 90 });
 
     const bufOut = await img.toBuffer();
     const b64Url = bufOut.toString("base64");
     const mdOut = await img.metadata();
     console.log("\nb64Url:", b64Url.slice(0, 200));
-    const urlPrefix = `data:image/${mdOut.format};base64,`
+    const urlPrefix = `data:image/${mdOut.format};base64,`;
 
     console.log("\n");
     // return serializeMetadata(mdOut)

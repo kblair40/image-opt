@@ -27,12 +27,24 @@ type Props = {
   originalImage: string;
 };
 
+type Dims = {
+  w: number;
+  h: number;
+};
+
+type Size = {
+  int: number;
+  str: string;
+};
+
 type Data = {
   diff: number;
   diffPct: string;
   diffStr: string;
-  size: { before: number; after: number };
+  size: { before: Size; after: Size };
+  //   size: { before: number; after: number };
   format: { before: string; after: string };
+  dims: { before: Dims; after: Dims };
   croppedUrl: string;
   originalUrl: string;
 };
@@ -51,7 +63,7 @@ const ImageOptimizerControls = ({
     async (croppedImage: string) => {
       if (!data) return;
 
-      const croppedMd = await getImageMetadata(croppedImage);
+      const croppedMd = await getImageMetadata(croppedImage, true);
       if (!croppedMd) {
         console.log("\nError getting cropped image metadata");
         return;
@@ -60,9 +72,11 @@ const ImageOptimizerControls = ({
       const {
         size: { before: os },
         format: { before: of },
+        dims: { before },
       } = data;
 
-      const cs = croppedMd.size;
+      //   const cs = croppedMd.size;
+      const { size: cs, height: ch, width: cw } = croppedMd;
 
       if (!cs || !os) {
         console.log("Failed getting original and/or cropped image sizes:", {
@@ -73,13 +87,14 @@ const ImageOptimizerControls = ({
       }
 
       setData({
-        diff: os - cs,
-        diffPct: ((cs / os) * 100 - 100).toFixed(2) + "%",
-        diffStr: getSizeString(os - cs),
-        size: { before: os, after: cs },
+        diff: os.int - cs,
+        diffPct: ((cs / os.int) * 100 - 100).toFixed(2) + "%",
+        diffStr: getSizeString(os.int - cs),
+        size: { before: os, after: { int: cs, str: getSizeString(cs) } },
         format: { before: of, after: croppedMd.format },
         croppedUrl: croppedImage,
         originalUrl: originalImage,
+        dims: { before, after: { w: cw, h: ch } },
       });
     },
     [data, originalImage]
@@ -88,7 +103,7 @@ const ImageOptimizerControls = ({
   useEffect(() => {
     async function initData() {
       const [croppedMd, originalMd] = await Promise.all([
-        getImageMetadata(croppedImage),
+        getImageMetadata(croppedImage, true),
         getImageMetadata(originalImage),
       ]);
       console.log("Metadata:", { croppedMd, originalMd });
@@ -97,8 +112,13 @@ const ImageOptimizerControls = ({
         return;
       }
 
-      const cs = croppedMd.size;
-      const os = originalMd.size;
+      //   const cs = croppedMd.size;
+      //   const os = originalMd.size;
+
+      const { size: os, height: oh, width: ow } = originalMd;
+      const { size: cs, height: ch, width: cw } = croppedMd;
+      console.log("Original:", os, getSizeString(os));
+      console.log("Cropped:", cs, getSizeString(cs));
 
       if (!cs || !os) {
         return <div className="centered">Size information is required</div>;
@@ -108,10 +128,14 @@ const ImageOptimizerControls = ({
         diff: os - cs,
         diffPct: ((cs / os) * 100 - 100).toFixed(2) + "%",
         diffStr: getSizeString(os - cs),
-        size: { before: os, after: cs },
+        size: {
+          before: { int: os, str: getSizeString(os) },
+          after: { int: cs, str: getSizeString(cs) },
+        },
         format: { before: originalMd.format, after: croppedMd.format },
         croppedUrl: croppedImage,
         originalUrl: originalImage,
+        dims: { before: { w: ow, h: oh }, after: { w: cw, h: ch } },
       });
     }
 
