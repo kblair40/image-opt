@@ -72,25 +72,6 @@ const ImageOptimizerControls = ({
         return;
       }
 
-      //   setData((prev) => {
-      //     if (!prev) return null;
-      //     const newData = {
-      //       ...prev,
-      //       diff: os - cs,
-      //       diffPct: ((cs / os) * 100 - 100).toFixed(2) + "%",
-      //       diffStr: getSizeString(os - cs),
-      //       size: { before: os, after: cs },
-      //       format: { before: of, after: croppedMd.format },
-      //       croppedUrl: croppedImage,
-      //     };
-
-      //     console.log("NEW DATA:", newData);
-
-      //     return newData;
-
-      //     // return !prev ? null : { ...prev };
-      //   });
-
       setData({
         diff: os - cs,
         diffPct: ((cs / os) * 100 - 100).toFixed(2) + "%",
@@ -102,46 +83,6 @@ const ImageOptimizerControls = ({
       });
     },
     [data, originalImage]
-  );
-
-  const updateData = useCallback(
-    async (_croppedImage = croppedImage) => {
-      if (data !== null) {
-        // await updateCroppedImageData(_croppedImage);
-        console.log("CALLING UPDATE CROPPED IMAGE DATA");
-        updateCroppedImageData(_croppedImage);
-        return;
-      }
-
-      const [croppedMd, originalMd] = await Promise.all([
-        //   getImageMetadata(croppedImage),
-        getImageMetadata(_croppedImage),
-        getImageMetadata(originalImage),
-      ]);
-      console.log("Metadata:", { croppedMd, originalMd });
-
-      if (!croppedMd || !originalMd) {
-        return;
-      }
-
-      const cs = croppedMd.size;
-      const os = originalMd.size;
-
-      if (!cs || !os) {
-        return <div className="centered">Size information is required</div>;
-      }
-
-      setData({
-        diff: os - cs,
-        diffPct: ((cs / os) * 100 - 100).toFixed(2) + "%",
-        diffStr: getSizeString(os - cs),
-        size: { before: os, after: cs },
-        format: { before: originalMd.format, after: croppedMd.format },
-        croppedUrl: croppedImage,
-        originalUrl: originalImage,
-      });
-    },
-    [croppedImage, originalImage, updateCroppedImageData, data]
   );
 
   useEffect(() => {
