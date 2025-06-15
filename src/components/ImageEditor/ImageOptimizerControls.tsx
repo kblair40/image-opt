@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import type { OutputInfo } from "sharp";
 
 import type { AllowedImageFormat, Metadata } from "@/lib/image-types";
 import {
@@ -106,7 +107,7 @@ const ImageOptimizerControls = ({
         getImageMetadata(croppedImage, true),
         getImageMetadata(originalImage),
       ]);
-      console.log("Metadata:", { croppedMd, originalMd });
+      //   console.log("Metadata:", { croppedMd, originalMd });
 
       if (!croppedMd || !originalMd) {
         return;
@@ -117,8 +118,8 @@ const ImageOptimizerControls = ({
 
       const { size: os, height: oh, width: ow } = originalMd;
       const { size: cs, height: ch, width: cw } = croppedMd;
-      console.log("Original:", os, getSizeString(os));
-      console.log("Cropped:", cs, getSizeString(cs));
+      //   console.log("Original:", os, getSizeString(os));
+      //   console.log("Cropped:", cs, getSizeString(cs));
 
       if (!cs || !os) {
         return <div className="centered">Size information is required</div>;
@@ -143,6 +144,34 @@ const ImageOptimizerControls = ({
       initData();
     }
   }, [originalImage, croppedImage, data]);
+
+  useEffect(() => {
+    async function fetchFile() {
+      console.log("\nFETCHING FILE");
+      try {
+        const baseUrl = "http://localhost:3000";
+        const [original, cropped] = await Promise.all([
+          fetch(baseUrl + "/api/get-image-file-info", {
+            method: "POST",
+            body: JSON.stringify({ dataUrl: originalImage }),
+          }),
+          fetch(baseUrl + "/api/get-image-file-info", {
+            method: "POST",
+            body: JSON.stringify({ dataUrl: croppedImage }),
+          }),
+        ]);
+        console.log("\nFetch res:", original);
+        if (original.status === 200 && cropped.status === 200) {
+          console.log("full res (original):", await original.json());
+          console.log("full res (cropped):", await cropped.json());
+        }
+      } catch (e) {
+        console.log("\nFailed to fetch file:", e, "\n");
+      }
+    }
+    fetchFile();
+    //   }, [originalImage]);
+  });
 
   async function handleChangeType(type: AllowedImageFormat) {
     if (!data) {
