@@ -153,14 +153,14 @@ const ImageOptimizerControls = ({
         const [original, cropped] = await Promise.all([
           fetch(baseUrl + "/api/get-image-file-info", {
             method: "POST",
-            body: JSON.stringify({ dataUrl: originalImage }),
+            body: JSON.stringify({ dataUrl: originalImage, isOriginal: true }),
           }),
           fetch(baseUrl + "/api/get-image-file-info", {
             method: "POST",
             body: JSON.stringify({ dataUrl: croppedImage }),
           }),
         ]);
-        console.log("\nFetch res:", original);
+        // console.log("\nFetch res:", original);
         if (original.status === 200 && cropped.status === 200) {
           console.log("full res (original):", await original.json());
           console.log("full res (cropped):", await cropped.json());
@@ -170,8 +170,9 @@ const ImageOptimizerControls = ({
       }
     }
     fetchFile();
-    //   }, [originalImage]);
-  });
+    // }, []);
+  }, [originalImage, croppedImage]);
+  // });
 
   async function handleChangeType(type: AllowedImageFormat) {
     if (!data) {
